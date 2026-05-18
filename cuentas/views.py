@@ -5,4 +5,6 @@ from django.contrib.auth.decorators import login_required
 def home(request):
     return render(request, 'home.html')
 
-# Create your views here.
+# Añadimos la nueva vista del buscador aquí abajo:
+def vista_busqueda(request):
+    return render(request, 'busqueda.html')
