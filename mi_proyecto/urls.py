@@ -7,4 +7,5 @@ urlpatterns = [
     path('cuentas/', include('django.contrib.auth.urls')),
     path('', views.home, name='home'),
     path('busqueda/', views.vista_busqueda, name='busqueda'), # <-- Agregamos esta línea
+    path('reportes/', include('reportes.urls')),
 ]

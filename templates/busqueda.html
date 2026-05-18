@@ -98,7 +98,7 @@
         <label for="codigo_buscar" style="font-size: 18px; color: #333;"><strong>Búsqueda de Nomenclatura Arancelaria</strong></label>
         
         <form class="fila-busqueda" method="GET" action="">
-            <input type="text" id="codigo_buscar" name="codigo" placeholder="Ej: 0101.21.00.00">
+            <input type="text" id="codigo_buscar" name="codigo" placeholder="Ej: 0101.21.00.00" value="{{ request.GET.codigo }}">
             
             <select name="tipo_filtro" id="tipo_filtro">
                 <option value="todo">Buscar en todo</option>
@@ -139,35 +139,48 @@
             </tr>
         </thead>
         <tbody>
-            <tr class="fila-gris">
-                <td>01.01</td>
-                <td colspan="12">Caballos, asnos, mulos y burdéganos, vivos.</td>
-            </tr>
-            <tr>
-                <td></td>
-                <td class="texto-izq">- Caballos:</td>
-                <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-            </tr>
-            <tr>
-                <td>0101.21.00.00</td>
-                <td class="texto-izq">- - Reproductores de raza pura</td>
-                <td class="negrita">5</td>
-                <td></td>
-                <td>u</td>
-                <td></td>
-                <td>C*</td>
-                <td>MDPyA (SENASAG)</td>
-                <td>Ley 830 - Dec. 515</td>
-                <td>100</td>
-                <td></td>
-                <td></td>
-                <td>100</td>
-            </tr>
-            <tr>
-                <td>0101.29</td>
-                <td class="texto-izq">- - Los demás:</td>
-                <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-            </tr>
+            {% if resultados %}
+                {% for item in resultados %}
+                    
+                    {% if item.codigo|length <= 5 %}
+                    <tr class="fila-gris">
+                        <td>{{ item.codigo }}</td>
+                        <td colspan="12">{{ item.descripcion }}</td>
+                    </tr>
+                    
+                    {% elif "-" in item.codigo %}
+                    <tr>
+                        <td></td>
+                        <td class="texto-izq">{{ item.descripcion }}</td>
+                        <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                    </tr>
+                    
+                    {% else %}
+                    <tr>
+                        <td>{{ item.codigo }}</td>
+                        <td class="texto-izq">{{ item.descripcion }}</td>
+                        <td class="negrita">{{ item.ga_porcentaje|default_if_none:"" }}</td>
+                        <td>{{ item.ice_iehd|default_if_none:"" }}</td>
+                        <td>{{ item.unidad_medida|default_if_none:"" }}</td>
+                        <td>{{ item.despacho_frontera|default_if_none:"" }}</td>
+                        <td>{{ item.doc_tipo|default_if_none:"" }}</td>
+                        <td>{{ item.doc_entidad|default_if_none:"" }}</td>
+                        <td>{{ item.doc_disposicion|default_if_none:"" }}</td>
+                        <td>{{ item.pref_can_ace|default_if_none:"" }}</td>
+                        <td>{{ item.pref_ace22_chi|default_if_none:"" }}</td>
+                        <td>{{ item.pref_ace22_prot|default_if_none:"" }}</td>
+                        <td>{{ item.pref_ace66_mexico|default_if_none:"" }}</td>
+                    </tr>
+                    {% endif %}
+                    
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="13" style="text-align: center; padding: 20px; font-size: 14px;">
+                        No se encontraron registros. Ingresa un código arancelario en el buscador superior.
+                    </td>
+                </tr>
+            {% endif %}
         </tbody>
     </table>
 
