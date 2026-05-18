@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <h2>Gestión de Reportes</h2>
+    
+    <div class="card mb-3">
+        <div class="card-body">
+            <form method="get" class="row g-2">
+                <div class="col-md-4">
+                    <select name="estado" class="form-select">
+                        <option value="">Todos los estados</option>
+                        <option value="pendiente">Pendiente</option>
+                        <option value="en_revision">En Revisión</option>
+                        <option value="resuelto">Resuelto</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <select name="categoria" class="form-select">
+                        <option value="">Todas las categorías</option>
+                        <option value="partida_arancelaria">Partida Arancelaria</option>
+                        <option value="codigo_producto">Código Producto</option>
+                        <option value="tarifa">Tarifa</option>
+                        <option value="otro">Otro</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <table class="table table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th><th>Título</th><th>Categoría</th><th>Prioridad</th>
+                <th>Estado</th><th>Reportante</th><th>Fecha</th><th>Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in reportes %}
+            <tr>
+                <td>#{{ r.id }}</td>
+                <td>{{ r.titulo }}</td>
+                <td>{{ r.get_categoria_display }}</td>
+                <td>{{ r.get_prioridad_display }}</td>
+                <td>{{ r.get_estado_display }}</td>
+                <td>{{ r.nombre_reportante }}</td>
+                <td>{{ r.fecha_creacion|date:"d/m/Y" }}</td>
+                <td>
+                    <a href="{% url 'reportes:admin_detalle' r.id %}" class="btn btn-sm btn-primary">Ver</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="8" class="text-center">No hay reportes.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

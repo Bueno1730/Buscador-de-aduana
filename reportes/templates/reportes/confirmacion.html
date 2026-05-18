@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5 text-center">
+    <h2 class="text-success">¡Reporte Enviado!</h2>
+    <p>Gracias <strong>{{ reporte.nombre_reportante }}</strong>.</p>
+    <p>Número de seguimiento: <strong>#{{ reporte.id }}</strong></p>
+    <p>Estado: <span class="badge bg-warning">{{ reporte.get_estado_display }}</span></p>
+    <a href="{% url 'reportes:reportar' %}" class="btn btn-outline-primary">Reportar otro</a>
+    <a href="/" class="btn btn-primary">Volver al inicio</a>
+</div>
+{% endblock %}
