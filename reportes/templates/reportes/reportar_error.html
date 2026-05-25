@@ -5,29 +5,36 @@
     <div class="row justify-content-center">
         <div class="col-lg-8">
             <h2 class="mb-4">Reportar un Error</h2>
-            
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-                {% endfor %}
+
+            {% if form.errors %}
+                <div class="alert alert-danger">Corrige los errores marcados en el formulario.</div>
             {% endif %}
 
-            <form method="post" enctype="multipart/form-data">
+            <form method="post" enctype="multipart/form-data" novalidate>
                 {% csrf_token %}
-                
+
                 <div class="mb-3">
                     <label class="form-label">Título *</label>
                     {{ form.titulo }}
+                    {% if form.titulo.errors %}
+                        <div class="invalid-feedback d-block">{{ form.titulo.errors.0 }}</div>
+                    {% endif %}
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label">Categoría *</label>
                     {{ form.categoria }}
+                    {% if form.categoria.errors %}
+                        <div class="invalid-feedback d-block">{{ form.categoria.errors.0 }}</div>
+                    {% endif %}
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label">Descripción *</label>
+                    <label class="form-label">Descripción del problema *</label>
                     {{ form.descripcion }}
+                    {% if form.descripcion.errors %}
+                        <div class="invalid-feedback d-block">{{ form.descripcion.errors.0 }}</div>
+                    {% endif %}
                 </div>
 
                 <div class="row">
@@ -44,16 +51,25 @@
                 <div class="mb-3">
                     <label class="form-label">Captura de pantalla</label>
                     {{ form.captura_pantalla }}
+                    {% if form.captura_pantalla.errors %}
+                        <div class="invalid-feedback d-block">{{ form.captura_pantalla.errors.0 }}</div>
+                    {% endif %}
                 </div>
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Tu nombre *</label>
                         {{ form.nombre_reportante }}
+                        {% if form.nombre_reportante.errors %}
+                            <div class="invalid-feedback d-block">{{ form.nombre_reportante.errors.0 }}</div>
+                        {% endif %}
                     </div>
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Tu email *</label>
                         {{ form.email_reportante }}
+                        {% if form.email_reportante.errors %}
+                            <div class="invalid-feedback d-block">{{ form.email_reportante.errors.0 }}</div>
+                        {% endif %}
                     </div>
                 </div>
 
