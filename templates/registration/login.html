@@ -4,14 +4,30 @@
     <meta charset="UTF-8">
     <title>Login - Aduana</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Oculta la lista de errores en inglés que Django genera automáticamente */
+        ul.errorlist {
+            display: none !important;
+        }
+    </style>
 </head>
 <body class="bg-gray-100 flex items-center justify-center h-screen">
     <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-sm">
         <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Acceso al Sistema</h2>
         
-        <form method="post">
+        {% if form.errors %}
+            <div class="mb-4 p-3 bg-red-100 text-red-700 border border-red-400 rounded text-sm font-medium text-center">
+                Credenciales incorrectas. Verifique su usuario y contraseña.
+            </div>
+        {% endif %}
+
+        <div id="error-password" class="hidden mb-4 p-3 bg-red-100 text-red-700 border border-red-400 rounded text-sm font-medium">
+            La contraseña debe tener al menos 8 caracteres, una mayúscula, un número y un carácter especial
+        </div>
+
+        <form method="post" id="login-form" accept-charset="UTF-8">
             {% csrf_token %}
-            <div class="mb-4 *:w-full *:mb-2 *:border *:border-gray-300 *:rounded *:p-2 *:text-gray-700">
+            <div class="mb-4 *:w-full *:mb-2 *:border *:border-gray-300 *:rounded *:p-2 *:text-gray-700 focus:*:outline-none focus:*:ring-2 focus:*:ring-blue-500">
                 {{ form.as_p }}
             </div>
             
@@ -20,5 +36,45 @@
             </button>
         </form>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('login-form');
+            const passwordInput = document.getElementById('id_password'); 
+            const errorDiv = document.getElementById('error-password');
+
+            // --- ESCENARIO 3: Limpiar input al fallar (Sin ventana emergente) ---
+            {% if form.errors %}
+                // Limpiamos el campo de contraseña para forzar nuevo ingreso
+                if (passwordInput) {
+                    passwordInput.value = '';
+                    passwordInput.focus();
+                }
+            {% endif %}
+
+            // --- ESCENARIO 1: Validación estricta del formato de la contraseña ---
+            form.addEventListener('submit', function(event) {
+                if (passwordInput) {
+                    const password = passwordInput.value;
+                    const passRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+
+                    if (!passRegex.test(password)) {
+                        event.preventDefault(); // Previene el envío del formulario
+                        
+                        // Muestra el mensaje de error de validación
+                        errorDiv.classList.remove('hidden');
+                        
+                        // Resalta el campo en rojo
+                        passwordInput.classList.add('border-red-500', 'ring-1', 'ring-red-500', 'bg-red-50');
+                        passwordInput.classList.remove('border-gray-300', 'focus:ring-blue-500');
+                    } else {
+                        // Limpia los errores si la contraseña cumple el formato
+                        errorDiv.classList.add('hidden');
+                        passwordInput.classList.remove('border-red-500', 'ring-1', 'ring-red-500', 'bg-red-50');
+                    }
+                }
+            });
+        });
+    </script>
 </body>
 </html>
