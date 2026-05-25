@@ -126,3 +126,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'reportes_errores')
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'login'
 LOGIN_URL = 'login'
+
+# Redirige automáticamente a la ruta 'busqueda' al iniciar sesión correctamente
+LOGIN_REDIRECT_URL = 'busqueda'
