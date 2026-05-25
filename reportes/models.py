@@ -34,7 +34,7 @@ class ReporteError(models.Model):
     partida_arancelaria_afectada = models.CharField(max_length=20, blank=True, null=True)
     codigo_producto_afectado = models.CharField(max_length=50, blank=True, null=True)
     
-    captura_pantalla = models.ImageField(upload_to='reportes_errores/capturas/%Y/%m/', blank=True, null=True)
+    captura_pantalla = models.ImageField(upload_to='capturas/%Y/%m/', blank=True, null=True)
     
     nombre_reportante = models.CharField(max_length=100)
     email_reportante = models.EmailField()
