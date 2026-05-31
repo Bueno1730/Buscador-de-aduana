@@ -6,7 +6,13 @@
     <p>Gracias <strong>{{ reporte.nombre_reportante }}</strong>.</p>
     <p>Número de seguimiento: <strong>#{{ reporte.id }}</strong></p>
     <p>Estado: <span class="badge bg-warning">{{ reporte.get_estado_display }}</span></p>
-    <a href="{% url 'reportes:reportar' %}" class="btn btn-outline-primary">Reportar otro</a>
-    <a href="/" class="btn btn-primary">Volver al inicio</a>
+    <div class="alert alert-info d-inline-block mt-2 mb-4">
+        Tienes <strong>10 minutos</strong> para hacer modificaciones o eliminar tu reporte.
+    </div>
+    <div>
+        <a href="{% url 'reportes:detalle_usuario' reporte.id %}" class="btn btn-outline-primary">Ver mi reporte</a>
+        <a href="{% url 'reportes:reportar' %}" class="btn btn-outline-secondary">Reportar otro</a>
+        <a href="/" class="btn btn-primary">Volver al inicio</a>
+    </div>
 </div>
 {% endblock %}
