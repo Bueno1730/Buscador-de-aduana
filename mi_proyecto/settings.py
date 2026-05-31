@@ -106,9 +106,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
+LANGUAGE_CODE = 'es'
+TIME_ZONE = 'America/La_Paz'
 
 USE_I18N = True
 
@@ -123,9 +122,11 @@ STATIC_URL = 'static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'reportes_errores')
 
-LOGIN_REDIRECT_URL = 'busqueda'
-LOGOUT_REDIRECT_URL = 'login'
-LOGIN_URL = 'login'
+# Redirige al menú principal después de iniciar sesión
+LOGIN_REDIRECT_URL = 'home'
 
-# Redirige automáticamente a la ruta 'busqueda' al iniciar sesión correctamente
-LOGIN_REDIRECT_URL = 'busqueda'
+# Hacia dónde va el usuario después de cerrar sesión
+LOGOUT_REDIRECT_URL = 'login'
+
+# Ruta por defecto para iniciar sesión
+LOGIN_URL = 'login'
