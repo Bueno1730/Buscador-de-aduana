@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="container py-4">
-    <a href="{% url 'reportes:admin_lista' %}" class="btn btn-outline-secondary mb-3">&larr; Volver a la lista</a>
+    <a href="{% url 'reportes:mis_reportes' %}" class="btn btn-outline-secondary mb-3">&larr; Volver a Mis Reportes</a>
 
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
@@ -13,11 +13,21 @@
         </div>
 
         <div class="card-body">
+            {% if puede_editar %}
+                <div class="alert alert-info d-flex align-items-center mb-3">
+                    <strong>Tienes 10 minutos para hacer modificaciones o eliminar este reporte.</strong>
+                </div>
+            {% else %}
+                <div class="alert alert-secondary d-flex align-items-center mb-3">
+                    El tiempo de edición ha expirado. Este reporte es de solo lectura.
+                </div>
+            {% endif %}
+
             <div class="row">
                 <div class="col-md-8">
                     <h4>{{ reporte.titulo }}</h4>
                     <p><strong>Categoría:</strong> {{ reporte.get_categoria_display }}</p>
-                    <p><strong>Prioridad:</strong> 
+                    <p><strong>Prioridad:</strong>
                         <span class="badge bg-{% if reporte.prioridad == 'critica' %}danger{% elif reporte.prioridad == 'alta' %}warning{% elif reporte.prioridad == 'media' %}info{% else %}secondary{% endif %}">
                             {{ reporte.get_prioridad_display }}
                         </span>
@@ -31,9 +41,6 @@
                         <p><strong>Usuario registrado:</strong> {{ reporte.usuario.username }}</p>
                     {% endif %}
                     <p><strong>Fecha de creación:</strong> {{ reporte.fecha_creacion|date:"d/m/Y H:i" }}</p>
-                    {% if reporte.fecha_resolucion %}
-                        <p><strong>Fecha de resolución:</strong> {{ reporte.fecha_resolucion|date:"d/m/Y H:i" }}</p>
-                    {% endif %}
 
                     {% if reporte.partida_arancelaria_afectada %}
                         <p><strong>Partida arancelaria afectada:</strong> {{ reporte.partida_arancelaria_afectada }}</p>
@@ -60,35 +67,13 @@
                 </div>
             </div>
 
-            <hr>
-
-            <h5>Gestión del reporte</h5>
-            <form method="post" class="row g-3">
-                {% csrf_token %}
-                <div class="col-md-4">
-                    <label class="form-label">Estado</label>
-                    <select name="estado" class="form-select">
-                        {% for key, label in reporte.ESTADOS %}
-                            <option value="{{ key }}" {% if reporte.estado == key %}selected{% endif %}>{{ label }}</option>
-                        {% endfor %}
-                    </select>
+            {% if puede_editar %}
+                <hr>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'reportes:editar' reporte.id %}" class="btn btn-warning">Editar reporte</a>
+                    <a href="{% url 'reportes:eliminar' reporte.id %}" class="btn btn-danger">Eliminar reporte</a>
                 </div>
-                <div class="col-md-4">
-                    <label class="form-label">Prioridad</label>
-                    <select name="prioridad" class="form-select">
-                        {% for key, label in reporte.PRIORIDADES %}
-                            <option value="{{ key }}" {% if reporte.prioridad == key %}selected{% endif %}>{{ label }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-12">
-                    <label class="form-label">Notas del administrador</label>
-                    <textarea name="notas_admin" class="form-control" rows="3">{% if reporte.notas_admin %}{{ reporte.notas_admin }}{% endif %}</textarea>
-                </div>
-                <div class="col-12">
-                    <button type="submit" class="btn btn-primary">Guardar cambios</button>
-                </div>
-            </form>
+            {% endif %}
         </div>
     </div>
 </div>

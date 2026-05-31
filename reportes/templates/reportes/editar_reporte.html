@@ -4,7 +4,7 @@
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-lg-8">
-            <h2 class="mb-4">Reportar un Error</h2>
+            <h2 class="mb-4">Editar Reporte #{{ reporte.id }}</h2>
 
             {% if form.errors %}
                 <div class="alert alert-danger">Corrige los errores marcados en el formulario.</div>
@@ -50,6 +50,11 @@
 
                 <div class="mb-3">
                     <label class="form-label">Captura de pantalla</label>
+                    {% if reporte.captura_pantalla %}
+                        <div class="mb-2">
+                            <small class="text-muted">Imagen actual: {{ reporte.captura_pantalla.name }}</small>
+                        </div>
+                    {% endif %}
                     {{ form.captura_pantalla }}
                     {% if form.captura_pantalla.errors %}
                         <div class="invalid-feedback d-block">{{ form.captura_pantalla.errors.0 }}</div>
@@ -73,7 +78,10 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-danger">Enviar Reporte</button>
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                    <a href="{% url 'reportes:detalle_usuario' reporte.id %}" class="btn btn-outline-secondary">Cancelar</a>
+                </div>
             </form>
         </div>
     </div>
