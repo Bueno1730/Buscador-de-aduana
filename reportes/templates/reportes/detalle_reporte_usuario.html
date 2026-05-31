@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-4">
+    <a href="{% url 'reportes:mis_reportes' %}" class="btn btn-outline-secondary mb-3">&larr; Volver a Mis Reportes</a>
+
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h3 class="mb-0">Reporte #{{ reporte.id }}</h3>
+            <span class="badge bg-{% if reporte.estado == 'pendiente' %}warning{% elif reporte.estado == 'en_revision' %}info{% elif reporte.estado == 'resuelto' %}success{% else %}secondary{% endif %} fs-6">
+                {{ reporte.get_estado_display }}
+            </span>
+        </div>
+
+        <div class="card-body">
+            {% if puede_editar %}
+                <div class="alert alert-info d-flex align-items-center mb-3">
+                    <strong>Tienes 10 minutos para hacer modificaciones o eliminar este reporte.</strong>
+                </div>
+            {% else %}
+                <div class="alert alert-secondary d-flex align-items-center mb-3">
+                    El tiempo de edición ha expirado. Este reporte es de solo lectura.
+                </div>
+            {% endif %}
+
+            <div class="row">
+                <div class="col-md-8">
+                    <h4>{{ reporte.titulo }}</h4>
+                    <p><strong>Categoría:</strong> {{ reporte.get_categoria_display }}</p>
+                    <p><strong>Prioridad:</strong>
+                        <span class="badge bg-{% if reporte.prioridad == 'critica' %}danger{% elif reporte.prioridad == 'alta' %}warning{% elif reporte.prioridad == 'media' %}info{% else %}secondary{% endif %}">
+                            {{ reporte.get_prioridad_display }}
+                        </span>
+                    </p>
+                    <p><strong>Descripción:</strong></p>
+                    <div class="p-3 bg-light rounded">{{ reporte.descripcion|linebreaks }}</div>
+
+                    <hr>
+                    <p><strong>Reportado por:</strong> {{ reporte.nombre_reportante }} ({{ reporte.email_reportante }})</p>
+                    {% if reporte.usuario %}
+                        <p><strong>Usuario registrado:</strong> {{ reporte.usuario.username }}</p>
+                    {% endif %}
+                    <p><strong>Fecha de creación:</strong> {{ reporte.fecha_creacion|date:"d/m/Y H:i" }}</p>
+
+                    {% if reporte.partida_arancelaria_afectada %}
+                        <p><strong>Partida arancelaria afectada:</strong> {{ reporte.partida_arancelaria_afectada }}</p>
+                    {% endif %}
+                    {% if reporte.codigo_producto_afectado %}
+                        <p><strong>Código de producto afectado:</strong> {{ reporte.codigo_producto_afectado }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="col-md-4">
+                    {% if reporte.captura_pantalla %}
+                        <div class="card">
+                            <div class="card-header">Captura de pantalla</div>
+                            <div class="card-body text-center">
+                                <a href="{{ reporte.captura_pantalla.url }}" target="_blank">
+                                    <img src="{{ reporte.captura_pantalla.url }}" alt="Captura de pantalla" class="img-fluid rounded" style="max-height: 300px;">
+                                </a>
+                                <p class="mt-2 small text-muted">Haz clic para ver en tamaño completo</p>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-secondary">Sin captura de pantalla adjunta.</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if puede_editar %}
+                <hr>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'reportes:editar' reporte.id %}" class="btn btn-warning">Editar reporte</a>
+                    <a href="{% url 'reportes:eliminar' reporte.id %}" class="btn btn-danger">Eliminar reporte</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

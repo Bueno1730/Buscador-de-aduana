@@ -1,0 +1,27 @@
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+
+# Django
+db.sqlite3
+*.log
+
+# Media uploads (archivos de usuarios)
+reportes_errores/
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Archivos temporales / accidentales
+drf
