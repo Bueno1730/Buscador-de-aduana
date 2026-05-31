@@ -7,6 +7,9 @@ urlpatterns = [
     path('reportar/', views.reportar_error, name='reportar'),
     path('confirmacion/<int:reporte_id>/', views.confirmacion_reporte, name='confirmacion'),
     path('mis-reportes/', views.mis_reportes, name='mis_reportes'),
+    path('<int:reporte_id>/', views.detalle_reporte_usuario, name='detalle_usuario'),
+    path('<int:reporte_id>/editar/', views.editar_reporte, name='editar'),
+    path('<int:reporte_id>/eliminar/', views.eliminar_reporte, name='eliminar'),
     path('admin/reportes/', views.lista_reportes_admin, name='admin_lista'),
     path('admin/reportes/<int:reporte_id>/', views.detalle_reporte_admin, name='admin_detalle'),
 ]

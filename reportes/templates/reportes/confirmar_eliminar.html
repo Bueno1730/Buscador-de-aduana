@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 text-center">
+            <div class="card border-danger">
+                <div class="card-body py-5">
+                    <h3 class="text-danger mb-3">Eliminar Reporte</h3>
+                    <p class="mb-2">¿Estás seguro de eliminar el reporte <strong>#{{ reporte.id }}</strong>?</p>
+                    <p class="text-muted mb-4">"{{ reporte.titulo }}"<br>Esta acción no se puede deshacer.</p>
+
+                    <div class="d-flex justify-content-center gap-3">
+                        <form method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+                        </form>
+                        <a href="{% url 'reportes:detalle_usuario' reporte.id %}" class="btn btn-outline-secondary">Cancelar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
