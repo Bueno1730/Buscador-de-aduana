@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Agregar Arancel - Buscador de Aduana</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-6">
+
+    <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-6xl">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6 border-b pb-4">➕ Agregar Nuevo Arancel</h1>
+        
+        {% if form.non_field_errors %}
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                
+                <div class="bg-gray-50 p-5 rounded-lg border border-gray-200 shadow-sm">
+                    <h2 class="text-lg font-semibold text-blue-800 mb-4 border-b pb-2">Datos Principales</h2>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">{{ form.codigo.label }}</label>
+                        {{ form.codigo }}
+                        <span class="text-red-500 text-xs">{{ form.codigo.errors }}</span>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">{{ form.descripcion.label }}</label>
+                        {{ form.descripcion }}
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">{{ form.ga_porcentaje.label }}</label>
+                            {{ form.ga_porcentaje }}
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">{{ form.unidad_medida.label }}</label>
+                            {{ form.unidad_medida }}
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">{{ form.ice_iehd.label }}</label>
+                        {{ form.ice_iehd }}
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">{{ form.despacho_frontera.label }}</label>
+                        {{ form.despacho_frontera }}
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 p-5 rounded-lg border border-gray-200 shadow-sm">
+                    <h2 class="text-lg font-semibold text-blue-800 mb-4 border-b pb-2">Documento Adicional</h2>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">{{ form.doc_tipo.label }}</label>
+                        {{ form.doc_tipo }}
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">{{ form.doc_entidad.label }}</label>
+                        {{ form.doc_entidad }}
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">{{ form.doc_disposicion.label }}</label>
+                        {{ form.doc_disposicion }}
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 p-5 rounded-lg border border-gray-200 shadow-sm">
+                    <h2 class="text-lg font-semibold text-blue-800 mb-4 border-b pb-2">Preferencias Arancelarias</h2>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">{{ form.pref_can_ace.label }}</label>
+                        {{ form.pref_can_ace }}
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">{{ form.pref_ace22_chi.label }}</label>
+                        {{ form.pref_ace22_chi }}
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">{{ form.pref_ace22_prot.label }}</label>
+                        {{ form.pref_ace22_prot }}
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">{{ form.pref_ace66_mexico.label }}</label>
+                        {{ form.pref_ace66_mexico }}
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="flex justify-between mt-8 border-t pt-6">
+                <a href="{% url 'home' %}" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded transition duration-300">
+                    ⬅️ Volver al Menú
+                </a>
+                <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded transition duration-300 text-lg shadow-lg">
+                    💾 Guardar Arancel
+                </button>
+            </div>
+        </form>
+    </div>
+
+</body>
+</html>

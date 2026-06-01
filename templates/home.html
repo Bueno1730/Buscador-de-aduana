@@ -17,9 +17,24 @@
                 🔍 Buscar Arancel
             </a>
 
-            <a href="/reportes/" class="block w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-4 rounded transition duration-300 shadow-sm">
-                ⚠️ Reportar Errores
-            </a>
+            {% if not user.is_staff %}
+                <a href="{% url 'reportes:reportar' %}" class="block w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-4 rounded transition duration-300 shadow-sm">
+                    ⚠️ Reportar un Error
+                </a>
+                <a href="{% url 'reportes:mis_reportes' %}" class="block w-full bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-4 rounded transition duration-300 shadow-sm">
+                    📂 Ver mis Reportes
+                </a>
+            {% endif %}
+
+            {% if user.is_staff %}
+                <a href="{% url 'reportes:admin_lista' %}" class="block w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded transition duration-300 shadow-sm">
+                    📋 Revisar Todos los Reportes
+                </a>
+                
+                <a href="{% url 'agregar_arancel' %}" class="block w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded transition duration-300 shadow-sm">
+                    ➕ Agregar Nuevo Arancel
+                </a>
+            {% endif %}
 
         </div>
 
@@ -31,6 +46,7 @@
                 </button>
             </form>
         </div>
+        
     </div>
 
 </body>
