@@ -2,14 +2,17 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
+from django.views.decorators.cache import never_cache
 from .models import Arancel
 from .forms import ArancelForm
 
 @login_required
+@never_cache
 def home(request):
     return render(request, 'home.html')
 
-@login_required # <-- Protege el buscador
+@login_required
+@never_cache
 def vista_busqueda(request):
     query = request.GET.get('codigo')
     resultados = None
@@ -19,14 +22,15 @@ def vista_busqueda(request):
 
     return render(request, 'busqueda.html', {'resultados': resultados})
 
-@staff_member_required # <-- Candado de seguridad: Solo administradores
+@staff_member_required
+@never_cache
 def agregar_arancel(request):
     if request.method == 'POST':
         form = ArancelForm(request.POST)
         if form.is_valid():
             form.save()
             messages.success(request, '¡Partida arancelaria guardada correctamente!')
-            return redirect('busqueda') # Te lleva al buscador tras guardar
+            return redirect('busqueda')
     else:
         form = ArancelForm()
     

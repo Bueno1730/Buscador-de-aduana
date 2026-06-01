@@ -3,9 +3,17 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from cuentas import views
+from django.contrib.auth import views as auth_views
+from cuentas.forms import CustomLoginForm
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    
+    path('cuentas/login/', auth_views.LoginView.as_view(
+        template_name='registration/login.html',
+        authentication_form=CustomLoginForm
+    ), name='login'),
+    
     path('cuentas/', include('django.contrib.auth.urls')),
     path('', views.home, name='home'),
     path('busqueda/', views.vista_busqueda, name='busqueda'),
