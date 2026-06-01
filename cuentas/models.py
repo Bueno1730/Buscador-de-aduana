@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 class Arancel(models.Model):
     # Código arancelario (ej: '0101.21.00.00'). Usamos CharField por los puntos.
@@ -30,3 +31,20 @@ class Arancel(models.Model):
     class Meta:
         verbose_name = "Arancel"
         verbose_name_plural = "Aranceles"
+
+# =========================================================
+# NUEVA CLASE: Debe estar alineada a la izquierda (0 espacios)
+# =========================================================
+class HistorialBusqueda(models.Model):
+    usuario = models.ForeignKey(User, on_delete=models.DO_NOTHING, verbose_name="Usuario Ejecutor")
+    codigo_buscado = models.CharField(max_length=50, verbose_name="Código Buscado")
+    fecha = models.DateTimeField(auto_now_add=True, verbose_name="Fecha y Hora")
+
+    class Meta:
+        verbose_name = "Historial de Búsqueda"
+        verbose_name_plural = "Historiales de Búsqueda"
+        # Esto asegura que el listado cronológico muestre lo más reciente primero
+        ordering = ['-fecha'] 
+
+    def __str__(self):
+        return f"{self.usuario.username} buscó {self.codigo_buscado} - {self.fecha.strftime('%d/%m/%Y %H:%M')}"

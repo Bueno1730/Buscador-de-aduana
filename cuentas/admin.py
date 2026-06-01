@@ -15,9 +15,9 @@ class ArancelForm(forms.ModelForm):
     def clean_codigo(self):
         codigo = self.cleaned_data.get('codigo')
         
-        # Criterio 2: Validación de formato (Números, puntos y guiones permitidos)
-        if not re.match(r'^[0-9\.\-A-Z]+$', codigo):
-            raise forms.ValidationError("El código debe contener únicamente números y puntos (formato válido).")
+        # Criterio 2: Validación de formato (Números, puntos, guiones y letras mayúsculas permitidas según tu regex)
+        if codigo and not re.match(r'^[0-9\.\-A-Z]+$', codigo):
+            raise forms.ValidationError("El código debe contener únicamente caracteres válidos para el arancel.")
         
         # Criterio 3: Prevención de códigos duplicados
         # Verificamos si estamos creando un registro nuevo y si ese código ya existe
@@ -26,11 +26,27 @@ class ArancelForm(forms.ModelForm):
             
         return codigo
 
-# --- CONFIGURACIÓN DE IMPORTACIÓN (Lo que ya tenías) ---
+# --- CONFIGURACIÓN DE IMPORTACIÓN MASIVA (EL MAPA DEL EXCEL) ---
 class ArancelResource(resources.ModelResource):
     class Meta:
         model = Arancel
         import_id_fields = ('codigo',) 
+        # Aquí le decimos exactamente cuáles son las 13 columnas que debe leer de tu Excel
+        fields = (
+            'codigo', 
+            'descripcion', 
+            'ga_porcentaje', 
+            'ice_iehd', 
+            'unidad_medida', 
+            'despacho_frontera', 
+            'doc_tipo', 
+            'doc_entidad', 
+            'doc_disposicion', 
+            'pref_can_ace', 
+            'pref_ace22_chi', 
+            'pref_ace22_prot', 
+            'pref_ace66_mexico'
+        )
 
 # --- PANEL DE ADMINISTRACIÓN ---
 @admin.register(Arancel)
