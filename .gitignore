@@ -1,32 +1,20 @@
-<<<<<<< HEAD
-db.sqlite3
+# Archivos compilados de Python
 __pycache__/
-=======
-# Python bytecode
-__pycache__/
-*.pyc
-*.pyo
+*.py[cod]
+*$py.class
 
-# Virtual environment
-.venv/
+# Entornos Virtuales (¡Muy importante no subir tu venv!)
 venv/
 env/
+ENV/
 
-# IDE
-.vscode/
-.idea/
-
-# Django
+# Base de datos local de Django
 db.sqlite3
-*.log
 
-# Media uploads (archivos de usuarios)
-reportes_errores/
-
-# OS files
-Thumbs.db
+# Archivos del sistema operativo
 .DS_Store
+Thumbs.db
 
-# Archivos temporales / accidentales
-drf
->>>>>>> 5edb11f84065d4fe705130163c28454c772cd888
+# Archivos de configuración local y variables de entorno
+.env
+.vscode/

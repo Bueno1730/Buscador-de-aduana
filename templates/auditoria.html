@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Auditoría de Búsquedas - SISARM</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-8">
+
+    <div class="max-w-6xl mx-auto bg-white p-6 rounded-lg shadow-md">
+        <div class="flex justify-between items-center mb-6 border-b pb-4">
+            <h1 class="text-2xl font-bold text-gray-800">🛡️ Historial de Auditoría SISARM</h1>
+            <a href="{% url 'home' %}" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded transition duration-300">
+                Volver al Menú
+            </a>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-white border border-gray-200">
+                <thead class="bg-gray-800 text-white">
+                    <tr>
+                        <th class="py-3 px-4 text-left font-semibold text-sm">Fecha y Hora</th>
+                        <th class="py-3 px-4 text-left font-semibold text-sm">Ejecutor</th>
+                        <th class="py-3 px-4 text-left font-semibold text-sm">Código Buscado</th>
+                    </tr>
+                </thead>
+                <tbody class="text-gray-700">
+                    {% for registro in registros %}
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="py-3 px-4">{{ registro.fecha|date:"d/m/Y H:i" }}</td>
+                        <td class="py-3 px-4 font-bold text-blue-600">{{ registro.usuario.username }}</td>
+                        <td class="py-3 px-4">{{ registro.codigo_buscado }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" class="py-6 text-center text-gray-500">No hay registros de búsqueda todavía.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</body>
+</html>

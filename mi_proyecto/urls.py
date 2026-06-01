@@ -19,6 +19,7 @@ urlpatterns = [
     path('busqueda/', views.vista_busqueda, name='busqueda'),
     path('reportes/', include('reportes.urls')),
     path('agregar-arancel/', views.agregar_arancel, name='agregar_arancel'),
+    path('auditoria/', views.auditoria_busquedas, name='auditoria'),
 ]
 
 if settings.DEBUG:
