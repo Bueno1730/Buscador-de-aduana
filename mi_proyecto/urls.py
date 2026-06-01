@@ -10,6 +10,7 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('busqueda/', views.vista_busqueda, name='busqueda'),
     path('reportes/', include('reportes.urls')),
+    path('agregar-arancel/', views.agregar_arancel, name='agregar_arancel'),
 ]
 
 if settings.DEBUG:
