@@ -130,3 +130,9 @@ LOGOUT_REDIRECT_URL = 'login'
 
 # Ruta por defecto para iniciar sesión
 LOGIN_URL = 'login'
+
+# Configuración para simular el envío de correos en la consola durante el desarrollo
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Obliga a que el enlace de recuperación expire en 15 minutos (900 segundos)
+PASSWORD_RESET_TIMEOUT = 900
