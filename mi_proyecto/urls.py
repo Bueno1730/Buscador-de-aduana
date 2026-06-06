@@ -14,6 +14,26 @@ urlpatterns = [
         authentication_form=CustomLoginForm
     ), name='login'),
     
+    # RUTAS DE RECUPERACIÓN DE CONTRASEÑA
+    path('cuentas/recuperar-contrasena/', auth_views.PasswordResetView.as_view(
+        template_name='registration/password_reset_form.html',
+        email_template_name='registration/password_reset_email.html',
+        subject_template_name='registration/password_reset_subject.txt'
+    ), name='password_reset'),
+    
+    path('cuentas/recuperar-contrasena/enviado/', auth_views.PasswordResetDoneView.as_view(
+        template_name='registration/password_reset_done.html'
+    ), name='password_reset_done'),
+    
+    path('cuentas/restablecer/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(
+        template_name='registration/password_reset_confirm.html'
+    ), name='password_reset_confirm'),
+    
+    path('cuentas/restablecer/completado/', auth_views.PasswordResetCompleteView.as_view(
+        template_name='registration/password_reset_complete.html'
+    ), name='password_reset_complete'),
+    # ---------------------------------------------------------
+    
     path('cuentas/', include('django.contrib.auth.urls')),
     path('', views.home, name='home'),
     path('busqueda/', views.vista_busqueda, name='busqueda'),
