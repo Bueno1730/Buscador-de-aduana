@@ -14,7 +14,7 @@
                 {% csrf_token %}
 
                 <div class="mb-3">
-                    <label class="form-label">Título *</label>
+                    <label class="form-label fw-bold">Título *</label>
                     {{ form.titulo }}
                     {% if form.titulo.errors %}
                         <div class="invalid-feedback d-block">{{ form.titulo.errors.0 }}</div>
@@ -22,7 +22,7 @@
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label">Categoría *</label>
+                    <label class="form-label fw-bold">Categoría *</label>
                     {{ form.categoria }}
                     {% if form.categoria.errors %}
                         <div class="invalid-feedback d-block">{{ form.categoria.errors.0 }}</div>
@@ -30,7 +30,7 @@
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label">Descripción del problema *</label>
+                    <label class="form-label fw-bold">Descripción del problema *</label>
                     {{ form.descripcion }}
                     {% if form.descripcion.errors %}
                         <div class="invalid-feedback d-block">{{ form.descripcion.errors.0 }}</div>
@@ -39,33 +39,47 @@
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Partida arancelaria afectada</label>
+                        <label class="form-label fw-bold">Partida arancelaria afectada</label>
                         {{ form.partida_arancelaria_afectada }}
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Código de producto afectado</label>
+                        <label class="form-label fw-bold">Código de producto afectado</label>
                         {{ form.codigo_producto_afectado }}
                     </div>
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Captura de pantalla</label>
-                    {{ form.captura_pantalla }}
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Captura de pantalla (Opcional)</label>
+
+                    <div class="input-group">
+                        <label for="id_captura_pantalla" class="input-group-text" style="cursor: pointer; background-color: #e9ecef; border: 1px solid #ced4da;">
+                            Seleccionar archivo
+                        </label>
+                        <div class="form-control text-muted" id="file-name" style="background-color: #fff; border: 1px solid #ced4da; overflow: hidden; white-space: nowrap;">
+                            Ningún archivo seleccionado
+                        </div>
+                    </div>
+
+                    <div style="height: 0; width: 0; overflow: hidden;">
+                        {{ form.captura_pantalla }}
+                    </div>
+
+                    <div id="file-error" class="d-none mt-2 alert alert-danger p-2" style="font-size: 0.875rem;"></div>
+
                     {% if form.captura_pantalla.errors %}
-                        <div class="invalid-feedback d-block">{{ form.captura_pantalla.errors.0 }}</div>
+                        <div class="text-danger mt-1" style="font-size: 0.875rem;">{{ form.captura_pantalla.errors.0 }}</div>
                     {% endif %}
                 </div>
-
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Tu nombre *</label>
+                        <label class="form-label fw-bold">Tu nombre *</label>
                         {{ form.nombre_reportante }}
                         {% if form.nombre_reportante.errors %}
                             <div class="invalid-feedback d-block">{{ form.nombre_reportante.errors.0 }}</div>
                         {% endif %}
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Tu email *</label>
+                        <label class="form-label fw-bold">Tu email *</label>
                         {{ form.email_reportante }}
                         {% if form.email_reportante.errors %}
                             <div class="invalid-feedback d-block">{{ form.email_reportante.errors.0 }}</div>
@@ -78,4 +92,54 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const fileInput = document.getElementById('id_captura_pantalla');
+        const fileNameDisplay = document.getElementById('file-name');
+        const fileError = document.getElementById('file-error');
+
+        if (fileInput) {
+            fileInput.addEventListener('change', function(event) {
+                // 1. Limpiar estados previos y ocultar alerta
+                fileError.classList.add('d-none');
+                fileError.textContent = '';
+                fileNameDisplay.classList.remove('text-danger');
+                fileNameDisplay.classList.add('text-muted');
+
+                if (this.files && this.files.length > 0) {
+                    const file = this.files[0];
+                    
+                    // Mostrar el nombre del archivo seleccionado
+                    fileNameDisplay.textContent = file.name;
+                    fileNameDisplay.classList.remove('text-muted'); 
+
+                    // 2. Validar Peso (5MB)
+                    const maxSize = 5 * 1024 * 1024; 
+                    if (file.size > maxSize) {
+                        fileError.textContent = "El archivo es demasiado pesado. El límite máximo es de 5 MB.";
+                        fileError.classList.remove('d-none');
+                        fileNameDisplay.classList.add('text-danger');
+                        this.value = ''; // Borra el archivo para que no se envíe
+                        return;
+                    }
+
+                    // 3. Validar Formato de Seguridad
+                    const allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
+                    if (!allowedExtensions.test(file.name)) {
+                        fileError.textContent = "Formato no válido. Solo se permiten imágenes (JPG, PNG).";
+                        fileError.classList.remove('d-none');
+                        fileNameDisplay.classList.add('text-danger');
+                        this.value = ''; 
+                        return;
+                    }
+
+                } else {
+                    fileNameDisplay.textContent = "Ningún archivo seleccionado";
+                    fileNameDisplay.classList.add('text-muted');
+                }
+            });
+        }
+    });
+</script>
 {% endblock %}
