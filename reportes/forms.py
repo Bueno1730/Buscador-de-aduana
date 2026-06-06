@@ -20,6 +20,9 @@ class ReporteErrorForm(forms.ModelForm):
             'codigo_producto_afectado': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej: PROD-2024-001'}),
             'nombre_reportante': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Tu nombre completo'}),
             'email_reportante': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'tu@email.com'}),
+            
+            # AGREGA ESTA LÍNEA PARA EL FILTRO DE FORMATOS
+            'captura_pantalla': forms.FileInput(attrs={'accept': '.jpg, .jpeg, .png'}),
         }
 
     def __init__(self, *args, **kwargs):

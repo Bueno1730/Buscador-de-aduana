@@ -48,19 +48,34 @@
                     </div>
                 </div>
 
-                <div class="mb-3">
+                <div class="mb-4">
                     <label class="form-label">Captura de pantalla</label>
+                    
                     {% if reporte.captura_pantalla %}
                         <div class="mb-2">
                             <small class="text-muted">Imagen actual: {{ reporte.captura_pantalla.name }}</small>
                         </div>
                     {% endif %}
-                    {{ form.captura_pantalla }}
+
+                    <div class="input-group">
+                        <label for="id_captura_pantalla" class="input-group-text" style="cursor: pointer; background-color: #e9ecef;">
+                            Seleccionar archivo
+                        </label>
+                        <div class="form-control text-muted" id="file-name" style="background-color: #fff; overflow: hidden; white-space: nowrap; border-left: 0;">
+                            Ningún archivo seleccionado
+                        </div>
+                    </div>
+
+                    <div style="display: none;">
+                        {{ form.captura_pantalla }}
+                    </div>
+
+                    <div id="file-error" class="d-none mt-2 alert alert-danger p-2" style="font-size: 0.875rem;"></div>
+
                     {% if form.captura_pantalla.errors %}
                         <div class="invalid-feedback d-block">{{ form.captura_pantalla.errors.0 }}</div>
                     {% endif %}
                 </div>
-
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Tu nombre *</label>
@@ -86,4 +101,65 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const fileInput = document.getElementById('id_captura_pantalla');
+        const fileNameDisplay = document.getElementById('file-name');
+        const fileError = document.getElementById('file-error');
+
+        if (fileInput) {
+            fileInput.addEventListener('change', function() {
+                // Limpiar alertas previas
+                fileError.classList.add('d-none');
+                fileError.textContent = '';
+                
+                // Restaurar color del texto original
+                fileNameDisplay.classList.remove('text-danger');
+                fileNameDisplay.classList.add('text-muted');
+
+                // Si el usuario seleccionó un archivo
+                if (this.files && this.files.length > 0) {
+                    const file = this.files[0];
+
+                    // Actualizar el texto al nombre del archivo
+                    fileNameDisplay.textContent = file.name;
+                    fileNameDisplay.classList.remove('text-muted'); // Oscurece el texto para que parezca lleno
+
+                    // Validación Criterio 2: Límite de 5 MB
+                    const maxSize = 5 * 1024 * 1024; // 5 MB en bytes
+                    if (file.size > maxSize) {
+                        fileError.textContent = "El archivo es demasiado pesado. El límite máximo es de 5 MB.";
+                        fileError.classList.remove('d-none');
+                        
+                        // Resaltar en rojo el texto del archivo
+                        fileNameDisplay.classList.add('text-danger');
+
+                        // Limpiar el input para que no se envíe
+                        this.value = '';
+                        return;
+                    }
+
+                    // Validación Criterio 3: Formatos permitidos
+                    const allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
+                    if (!allowedExtensions.test(file.name)) {
+                        fileError.textContent = "Formato no válido. Solo se permiten imágenes (JPG, PNG).";
+                        fileError.classList.remove('d-none');
+                        
+                        // Resaltar en rojo el texto del archivo
+                        fileNameDisplay.classList.add('text-danger');
+
+                        // Limpiar el input
+                        this.value = '';
+                        return;
+                    }
+
+                } else {
+                    // Si el usuario cancela la selección
+                    fileNameDisplay.textContent = "Ningún archivo seleccionado";
+                }
+            });
+        }
+    });
+</script>
 {% endblock %}
