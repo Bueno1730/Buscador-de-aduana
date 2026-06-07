@@ -127,7 +127,7 @@
                     // 3. Validar Formato de Seguridad
                     const allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
                     if (!allowedExtensions.test(file.name)) {
-                        fileError.textContent = "Formato no válido. Solo se permiten imágenes (JPG, PNG).";
+                        fileError.textContent = "Formato no válido. Solo se permiten imágenes (JPG, JPEG, PNG).";
                         fileError.classList.remove('d-none');
                         fileNameDisplay.classList.add('text-danger');
                         this.value = ''; 
