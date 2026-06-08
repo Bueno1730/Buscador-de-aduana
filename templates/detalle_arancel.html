@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalles Arancelarios - {{ arancel.codigo }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-8">
+
+    <div class="max-w-4xl mx-auto">
+        <div class="mb-6">
+            <a href="javascript:history.back()" class="text-blue-600 hover:text-blue-800 font-semibold flex items-center">
+                ⬅️ Volver a los resultados
+            </a>
+
+            {% if request.user.is_staff %}
+            <a href="{% url 'editar_arancel' arancel.id %}" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded shadow">
+                ✏️ Editar Partida
+            </a>
+            {% endif %}
+        </div>
+
+        <div class="bg-white p-8 rounded-lg shadow-lg border-t-4 border-blue-800">
+            <div class="flex justify-between items-start border-b pb-4 mb-6">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">Partida: {{ arancel.codigo }}</h1>
+                    <p class="text-lg text-gray-600 mt-2">{{ arancel.descripcion }}</p>
+                </div>
+                <div class="bg-blue-100 text-blue-800 px-4 py-2 rounded font-bold text-xl">
+                    GA: {{ arancel.ga_porcentaje }}%
+                </div>
+            </div>
+
+            <div class="mb-8">
+                <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                    ⚖️ Notas Explicativas y Marco Legal
+                </h2>
+                <div class="bg-gray-50 p-6 rounded border border-gray-200 text-gray-700 leading-relaxed whitespace-pre-wrap">
+                    {% if arancel.notas_explicativas %}
+                        {{ arancel.notas_explicativas }}
+                    {% else %}
+                        <em class="text-gray-500">No hay notas explicativas registradas para esta partida arancelaria.</em>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-blue-50 p-6 rounded border border-blue-100">
+                <div>
+                    <h3 class="font-bold text-blue-900 mb-2">Documentos Exigibles</h3>
+                    <ul class="text-blue-800 text-sm space-y-1">
+                        <li><strong>Tipo:</strong> {{ arancel.doc_tipo|default:"Ninguno" }}</li>
+                        <li><strong>Entidad:</strong> {{ arancel.doc_entidad|default:"-" }}</li>
+                        <li><strong>Disposición Legal:</strong> {{ arancel.doc_disposicion|default:"-" }}</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-bold text-blue-900 mb-2">Preferencias Arancelarias</h3>
+                    <ul class="text-blue-800 text-sm space-y-1">
+                        <li><strong>CAN / ACE 36 / 47:</strong> {{ arancel.pref_can_ace|default:"-" }}</li>
+                        <li><strong>ACE 66 México:</strong> {{ arancel.pref_ace66_mexico|default:"-" }}</li>
+                    </ul>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+</body>
+</html>

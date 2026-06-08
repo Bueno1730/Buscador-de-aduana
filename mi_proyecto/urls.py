@@ -40,6 +40,8 @@ urlpatterns = [
     path('reportes/', include('reportes.urls')),
     path('agregar-arancel/', views.agregar_arancel, name='agregar_arancel'),
     path('auditoria/', views.auditoria_busquedas, name='auditoria'),
+    path('arancel/<int:arancel_id>/', views.detalle_arancel, name='detalle_arancel'),
+    path('arancel/editar/<int:arancel_id>/', views.editar_arancel, name='editar_arancel'),
 ]
 
 if settings.DEBUG:

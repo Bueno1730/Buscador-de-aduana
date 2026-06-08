@@ -5,6 +5,7 @@ class Arancel(models.Model):
     # Código arancelario (ej: '0101.21.00.00'). Usamos CharField por los puntos.
     codigo = models.CharField(max_length=20, unique=True, verbose_name="Código")
     descripcion = models.TextField(verbose_name="Descripción de la Mercancía")
+    notas_explicativas = models.TextField(null=True, blank=True, verbose_name="Notas Explicativas y Legales")
     
     # Gravamen Arancelario (GA %)
     ga_porcentaje = models.IntegerField(null=True, blank=True, verbose_name="GA %")

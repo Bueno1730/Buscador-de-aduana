@@ -95,10 +95,12 @@
 <body>
 
     <div class="contenedor-buscador">
-        <label for="codigo_buscar" style="font-size: 18px; color: #333;"><strong>Búsqueda de Nomenclatura Arancelaria</strong></label>
+        <label for="codigo_buscar" style="font-size: 18px; color: #333;">
+            <strong>Búsqueda por Nomenclatura o Palabra Clave</strong>
+        </label>
         
         <form class="fila-busqueda" method="GET" action="">
-            <input type="text" id="codigo_buscar" name="codigo" placeholder="Ej: 0101.21.00.00" value="{{ request.GET.codigo }}">
+            <input type="text" id="codigo_buscar" name="codigo" placeholder="Ej: 0101.21.00.00 o 'Caballos'" value="{{ request.GET.codigo }}">
             
             <select name="tipo_filtro" id="tipo_filtro">
                 <option value="todo">Buscar en todo</option>
@@ -112,7 +114,7 @@
             <button type="submit">Buscar</button>
         </form>
     </div>
-</form>
+
     <table>
         <thead>
             <tr>
@@ -157,7 +159,11 @@
                     
                     {% else %}
                     <tr>
-                        <td>{{ item.codigo }}</td>
+                        <td>
+                            <a href="{% url 'detalle_arancel' item.id %}" style="color: #2563eb; text-decoration: underline; font-weight: bold;">
+                                {{ item.codigo }}
+                            </a>
+                        </td>
                         <td class="texto-izq">{{ item.descripcion }}</td>
                         <td class="negrita">{{ item.ga_porcentaje|default_if_none:"" }}</td>
                         <td>{{ item.ice_iehd|default_if_none:"" }}</td>
