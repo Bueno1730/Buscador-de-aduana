@@ -18,3 +18,5 @@ Thumbs.db
 # Archivos de configuración local y variables de entorno
 .env
 .vscode/
+# Entornos virtuales locales.venv/
+reportes_errores/
