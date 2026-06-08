@@ -35,6 +35,7 @@ class ArancelResource(resources.ModelResource):
         fields = (
             'codigo', 
             'descripcion', 
+            'notas_explicativas',
             'ga_porcentaje', 
             'ice_iehd', 
             'unidad_medida', 
@@ -61,3 +62,4 @@ class ArancelAdmin(ImportExportModelAdmin):
         super().save_model(request, obj, form, change)
         if not change: # Si es una creación nueva y no una edición
             messages.success(request, "Partida arancelaria guardada correctamente.")
+
