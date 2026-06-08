@@ -15,6 +15,34 @@
             </a>
         </div>
 
+        {% if usuario_filtro %}
+        <div class="mb-4 p-3 bg-blue-100 border border-blue-400 text-blue-700 rounded">
+            Filtrando por despachante: <strong>{{ usuario_filtro }}</strong>
+        </div>
+        {% endif %}
+
+        <form method="get" class="mb-4 flex flex-wrap gap-2 items-end">
+            <div>
+                <label for="filtro-usuario" class="block text-sm font-bold text-gray-700 mb-1">Filtrar por despachante:</label>
+                <select name="usuario" id="filtro-usuario" class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">Todos los despachantes</option>
+                    {% for u in usuarios %}
+                    <option value="{{ u.username }}" {% if usuario_filtro == u.username %}selected{% endif %}>
+                        {{ u.username }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300">
+                Filtrar
+            </button>
+            {% if usuario_filtro %}
+            <a href="{% url 'auditoria' %}" class="bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded transition duration-300">
+                Limpiar filtro
+            </a>
+            {% endif %}
+        </form>
+
         <div class="overflow-x-auto">
             <table class="min-w-full bg-white border border-gray-200">
                 <thead class="bg-gray-800 text-white">
@@ -28,12 +56,23 @@
                     {% for registro in registros %}
                     <tr class="border-b hover:bg-gray-50">
                         <td class="py-3 px-4">{{ registro.fecha|date:"d/m/Y H:i" }}</td>
-                        <td class="py-3 px-4 font-bold text-blue-600">{{ registro.usuario.username }}</td>
+                        <td class="py-3 px-4">
+                            <a href="{% url 'auditoria' %}?usuario={{ registro.usuario.username }}"
+                               class="font-bold text-blue-600 hover:text-blue-800 hover:underline">
+                                {{ registro.usuario.username }}
+                            </a>
+                        </td>
                         <td class="py-3 px-4">{{ registro.codigo_buscado }}</td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="3" class="py-6 text-center text-gray-500">No hay registros de búsqueda todavía.</td>
+                        <td colspan="3" class="py-6 text-center text-gray-500">
+                            {% if usuario_filtro %}
+                                No hay registros del despachante <strong>{{ usuario_filtro }}</strong>.
+                            {% else %}
+                                No hay registros de búsqueda todavía.
+                            {% endif %}
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
