@@ -2,7 +2,7 @@
 
 Sistema integral diseñado para optimizar las consultas y la gestión de Nomenclatura Arancelaria, facilitando el trabajo de los despachantes de aduana.
 
-## 🚀 Características Principales
+##  Características Principales
 
 * **Buscador Especializado:** Consulta rápida de partidas arancelarias, incluyendo Gravamen Arancelario (GA), impuestos adicionales (ICE - IEHD) y requisitos de despacho (SENASAG, disp. legales).
 * **Gestión Administrativa:** Panel protegido para la creación, edición y eliminación de aranceles.
@@ -10,14 +10,14 @@ Sistema integral diseñado para optimizar las consultas y la gestión de Nomencl
 * **Auditoría Inalterable:** Registro automático de trazabilidad que documenta qué usuario realiza cada búsqueda y en qué momento.
 * **Sistema de Roles:** Vistas y permisos separados para Administradores y Despachantes.
 
-## 🛠️ Tecnologías Utilizadas
+##  Tecnologías Utilizadas
 
 * **Backend:** Python / Django
 * **Base de Datos:** SQLite (Desarrollo)
 * **Frontend:** HTML5 / Tailwind CSS
 * **Herramientas Extra:** `django-import-export`
 
-## 📦 Instalación y Configuración Local
+##  Instalación y Configuración Local
 
 Sigue estos pasos para ejecutar el proyecto en tu entorno local:
 
@@ -41,22 +41,22 @@ python manage.py migrate
 Iniciar el servidor de desarrollo:
 
 python manage.py runserver
-🔐 Acceso al Sistema (Cuentas de Prueba)
+Acceso al Sistema (Cuentas de Prueba)
 Para evaluar el sistema rápidamente una vez levantado el servidor, puedes iniciar sesión utilizando las siguientes credenciales preconfiguradas:
 
-👑 Cuenta de Administrador (Privilegios de edición):
+Cuenta de Administrador (Privilegios de edición):
 
 Usuario: Bueno17
 
 Contraseña: Pablobueno_17
 
-👤 Cuenta de Despachante (Solo lectura y búsqueda):
+Cuenta de Despachante (Solo lectura y búsqueda):
 
 Usuario: Bueno
 
 Contraseña: Pablobueno_30
 
-👥 Creación de Nuevos Usuarios
+Creación de Nuevos Usuarios
 Si necesitas generar cuentas adicionales para pruebas o evaluación, puedes usar cualquiera de los siguientes métodos:
 
 1. Crear un nuevo Administrador (Superusuario)
