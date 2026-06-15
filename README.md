@@ -95,4 +95,4 @@ Este proyecto utiliza **Google Gemini** como motor de Inteligencia Artificial me
 
 ### Pasos:
 1. En la raíz del proyecto, copia el archivo de ejemplo de variables de entorno:
-   claveapi.env.example
+   `claveapi.env.example`
