@@ -4,22 +4,64 @@
     <meta charset="UTF-8">
     <title>Detalles Arancelarios - {{ arancel.codigo }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Librerías para exportar a PDF e Imagen -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body class="bg-gray-100 min-h-screen p-8">
 
     <div class="max-w-4xl mx-auto">
-        <div class="mb-6">
-            <a href="javascript:history.back()" class="text-blue-600 hover:text-blue-800 font-semibold flex items-center">
-                ⬅️ Volver a los resultados
-            </a>
+        
+        <!-- Controles de Acción y Exportación -->
+        <div class="flex flex-wrap gap-4 items-center justify-between mb-6">
+            <div class="flex gap-4 items-center">
+                <a href="javascript:history.back()" class="text-blue-600 hover:text-blue-800 font-semibold flex items-center">
+                    ⬅️ Volver a los resultados
+                </a>
 
-            {% if request.user.is_staff %}
-            <a href="{% url 'editar_arancel' arancel.id %}" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded shadow">
-                ✏️ Editar Partida
-            </a>
-            {% endif %}
+                {% if request.user.is_staff %}
+                <a href="{% url 'editar_arancel' arancel.id %}" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded shadow">
+                    ✏️ Editar Partida
+                </a>
+                {% endif %}
+            </div>
+
+            <!-- Menú Exportar -->
+            <div class="relative inline-block text-left">
+                <button type="button" id="btn-exportar" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-md shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex items-center transition-colors">
+                    Exportar
+                    <svg class="ml-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+
+                <!-- Dropdown (Oculto por defecto) -->
+                <div id="dropdown-exportar" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50">
+                    <div class="py-1">
+                        <a href="#" id="export-pdf" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-medium">Descargar como PDF</a>
+                        <a href="#" id="export-img" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-medium">Descargar como Imagen (PNG)</a>
+                    </div>
+                </div>
+            </div>
         </div>
 
+        <!-- Alerta de Error de Exportación -->
+        <div id="error-exportacion" class="hidden mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded-md shadow-sm">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm text-red-700 font-medium">
+                        No se pudo generar el reporte. Por favor, intente nuevamente.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenedor Principal (Original) -->
         <div class="bg-white p-8 rounded-lg shadow-lg border-t-4 border-blue-800">
             <div class="flex justify-between items-start border-b pb-4 mb-6">
                 <div>
@@ -61,9 +103,152 @@
                     </ul>
                 </div>
             </div>
-            
         </div>
     </div>
 
+    <!-- Contenedor Oculto para la Generación del Reporte (Plantilla PDF/Imagen) -->
+    <div class="fixed top-0 left-0 w-full h-full pointer-events-none -z-50 opacity-0 overflow-hidden">
+        <div id="reporte-legal" class="w-[800px] bg-white rounded-lg shadow-xl border border-gray-200 p-10 m-4">
+            
+            <div class="text-center border-b border-gray-200 pb-6 mb-6">
+                <h2 class="text-3xl font-extrabold text-gray-900">Sustento Técnico Arancelario</h2>
+                <p class="text-sm text-gray-500 mt-2 uppercase tracking-wide">Reporte Formal de Clasificación</p>
+            </div>
+            
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase">Partida Arancelaria</label>
+                    <div class="mt-1 text-2xl font-black text-blue-700 bg-blue-50 py-2 px-4 rounded-md border border-blue-100">
+                        {{ arancel.codigo }}
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase">Descripción</label>
+                    <div class="mt-1 text-base text-gray-800 bg-gray-50 py-3 px-4 rounded-md border border-gray-200">
+                        {{ arancel.descripcion }}
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase">Notas Explicativas / Restricciones</label>
+                    <div class="mt-1 text-sm text-gray-700 bg-gray-50 py-4 px-4 rounded-md border border-gray-200 text-justify whitespace-pre-wrap">{% if arancel.notas_explicativas %}{{ arancel.notas_explicativas }}{% else %}Sin notas explicativas registradas para esta partida arancelaria.{% endif %}</div>
+                </div>
+            </div>
+
+            <div class="mt-10 pt-6 border-t border-gray-200 flex justify-between items-center text-sm">
+                <div class="flex flex-col">
+                    <span class="text-gray-500 text-xs uppercase font-bold">Despachante Autorizado</span>
+                    <span class="text-gray-900 font-semibold mt-1">{{ user.username|default:"Usuario"|upper }}</span>
+                </div>
+                <div class="flex flex-col text-right">
+                    <span class="text-gray-500 text-xs uppercase font-bold">Fecha y Hora de Consulta</span>
+                    <span id="fecha-hora-exportacion" class="text-gray-900 font-medium mt-1"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts de Lógica de Exportación -->
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const btnExportar = document.getElementById('btn-exportar');
+        const dropdown = document.getElementById('dropdown-exportar');
+        const btnPdf = document.getElementById('export-pdf');
+        const btnImg = document.getElementById('export-img');
+        const reporteDiv = document.getElementById('reporte-legal');
+        const alertaError = document.getElementById('error-exportacion');
+        const campoFecha = document.getElementById('fecha-hora-exportacion');
+
+        // Mostrar/Ocultar Menú
+        btnExportar.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdown.classList.toggle('hidden');
+            alertaError.classList.add('hidden'); // Ocultar error si existía
+        });
+
+        // Cerrar menú al hacer clic afuera
+        document.addEventListener('click', () => {
+            dropdown.classList.add('hidden');
+        });
+
+        // Fijar la fecha/hora exacta de la consulta
+        function fijarAuditoria() {
+            const ahora = new Date();
+            campoFecha.innerText = ahora.toLocaleString('es-BO', { 
+                year: 'numeric', month: '2-digit', day: '2-digit', 
+                hour: '2-digit', minute: '2-digit', second: '2-digit' 
+            });
+        }
+
+        // Manejar estado visual del botón
+        function setCargando(estado) {
+            if (estado) {
+                btnExportar.innerHTML = 'Generando...';
+                btnExportar.disabled = true;
+                btnExportar.classList.add('opacity-75', 'cursor-not-allowed');
+            } else {
+                btnExportar.innerHTML = `Exportar <svg class="ml-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>`;
+                btnExportar.disabled = false;
+                btnExportar.classList.remove('opacity-75', 'cursor-not-allowed');
+            }
+        }
+
+        // Exportar a PDF
+        btnPdf.addEventListener('click', async (e) => {
+            e.preventDefault();
+            fijarAuditoria();
+            setCargando(true);
+            dropdown.classList.add('hidden');
+
+            try {
+                const canvas = await html2canvas(reporteDiv, {
+                    scale: 2, 
+                    backgroundColor: '#ffffff'
+                });
+                const imgData = canvas.toDataURL('image/png');
+                
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'mm', 'a4'); 
+                
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+                
+                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+                pdf.save(`Sustento_Arancel_{{ arancel.codigo }}.pdf`);
+            } catch (error) {
+                console.error("Fallo al exportar PDF:", error);
+                alertaError.classList.remove('hidden');
+            } finally {
+                setCargando(false);
+            }
+        });
+
+        // Exportar a Imagen
+        btnImg.addEventListener('click', async (e) => {
+            e.preventDefault();
+            fijarAuditoria();
+            setCargando(true);
+            dropdown.classList.add('hidden');
+
+            try {
+                const canvas = await html2canvas(reporteDiv, {
+                    scale: 2,
+                    backgroundColor: '#ffffff'
+                });
+                
+                const link = document.createElement('a');
+                link.download = `Sustento_Arancel_{{ arancel.codigo }}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            } catch (error) {
+                console.error("Fallo al exportar Imagen:", error);
+                alertaError.classList.remove('hidden');
+            } finally {
+                setCargando(false);
+            }
+        });
+    });
+    </script>
 </body>
 </html>
