@@ -14,8 +14,8 @@ class ReporteError(models.Model):
     ]
     
     ESTADOS = [
-        ('Borrador', 'Borrador'), # Cumple tu criterio 7
-        ('Pendiente de revisión', 'Pendiente de revisión'), # Cumple tu criterio 3
+        ('Borrador', 'Borrador'),
+        ('Pendiente de revisión', 'Pendiente de revisión'),
         ('en_revision', 'En Revisión'),
         ('resuelto', 'Resuelto'),
         ('rechazado', 'Rechazado'),
