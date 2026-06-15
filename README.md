@@ -88,3 +88,11 @@ Define el usuario, la contraseña y guarda.
 Asegúrate de que la casilla "Estado de staff" (Staff status) permanezca DESMARCADA para mantenerlo con el rol de solo lectura.
 
 Desarrollado por Bueno17, SiroCarv, Kwyxzel.
+
+## 🤖 Configuración del Asistente Inteligente (Sisa)
+
+Este proyecto utiliza **Google Gemini** como motor de Inteligencia Artificial mediante RAG (Retrieval-Augmented Generation) para responder consultas sobre la base de datos arancelaria. Para que funcione localmente, necesitas configurar API Key.
+
+### Pasos:
+1. En la raíz del proyecto, copia el archivo de ejemplo de variables de entorno:
+   `claveapi.env.example`

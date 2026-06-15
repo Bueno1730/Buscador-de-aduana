@@ -42,6 +42,10 @@ urlpatterns = [
     path('auditoria/', views.auditoria_busquedas, name='auditoria'),
     path('arancel/<int:arancel_id>/', views.detalle_arancel, name='detalle_arancel'),
     path('arancel/editar/<int:arancel_id>/', views.editar_arancel, name='editar_arancel'),
+    path('carga-masiva/', views.carga_masiva, name='carga_masiva'),
+    path('chat-ia/', views.chat_inteligente, name='chat_ia'),
+    path('asistente/', views.pantalla_chat, name='pantalla_chat'), 
+    path('api/chat/', views.chat_inteligente, name='chat_ia')
 ]
 
 if settings.DEBUG:
