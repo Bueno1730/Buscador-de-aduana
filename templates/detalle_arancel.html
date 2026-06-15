@@ -130,6 +130,36 @@
                     </div>
                 </div>
 
+                <div class="grid grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase">Gravamen Arancelario (GA%)</label>
+                        <div class="mt-1 text-base text-gray-800 bg-gray-50 py-3 px-4 rounded-md border border-gray-200">
+                            {{ arancel.ga_porcentaje|default:"-" }}%
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase">ICE / IEHD</label>
+                        <div class="mt-1 text-base text-gray-800 bg-gray-50 py-3 px-4 rounded-md border border-gray-200">
+                            {{ arancel.ice_iehd|default:"-" }}
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase">Unidad de Medida</label>
+                        <div class="mt-1 text-base text-gray-800 bg-gray-50 py-3 px-4 rounded-md border border-gray-200">
+                            {{ arancel.unidad_medida|default:"-" }}
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase">Documentos Exigibles</label>
+                    <div class="mt-1 bg-gray-50 py-3 px-4 rounded-md border border-gray-200 space-y-1 text-sm text-gray-800">
+                        <p><strong>Tipo:</strong> {{ arancel.doc_tipo|default:"Ninguno" }}</p>
+                        <p><strong>Entidad emisora:</strong> {{ arancel.doc_entidad|default:"-" }}</p>
+                        <p><strong>Disposición Legal:</strong> {{ arancel.doc_disposicion|default:"-" }}</p>
+                    </div>
+                </div>
+
                 <div>
                     <label class="block text-xs font-bold text-gray-500 uppercase">Notas Explicativas / Restricciones</label>
                     <div class="mt-1 text-sm text-gray-700 bg-gray-50 py-4 px-4 rounded-md border border-gray-200 text-justify whitespace-pre-wrap">{% if arancel.notas_explicativas %}{{ arancel.notas_explicativas }}{% else %}Sin notas explicativas registradas para esta partida arancelaria.{% endif %}</div>
