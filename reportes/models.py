@@ -14,7 +14,8 @@ class ReporteError(models.Model):
     ]
     
     ESTADOS = [
-        ('pendiente', 'Pendiente'),
+        ('Borrador', 'Borrador'), # Cumple tu criterio 7
+        ('Pendiente de revisión', 'Pendiente de revisión'), # Cumple tu criterio 3
         ('en_revision', 'En Revisión'),
         ('resuelto', 'Resuelto'),
         ('rechazado', 'Rechazado'),
@@ -34,14 +35,16 @@ class ReporteError(models.Model):
     partida_arancelaria_afectada = models.CharField(max_length=20, blank=True, null=True)
     codigo_producto_afectado = models.CharField(max_length=50, blank=True, null=True)
     
-    captura_pantalla = models.ImageField(upload_to='capturas/%Y/%m/', blank=True, null=True)
+    # Cumple Épica: Ruta organizada por año y mes
+    captura_pantalla = models.ImageField(upload_to='reportes_errores/capturas/%Y/%m/', blank=True, null=True)
     
     nombre_reportante = models.CharField(max_length=100)
     email_reportante = models.EmailField()
     es_usuario_registrado = models.BooleanField(default=False)
     usuario = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     
-    estado = models.CharField(max_length=20, choices=ESTADOS, default='pendiente')
+    # Cumple tu criterio 7: El reporte inicia (virtualmente) en Borrador
+    estado = models.CharField(max_length=30, choices=ESTADOS, default='Borrador')
     prioridad = models.CharField(max_length=20, choices=PRIORIDADES, default='media')
     
     fecha_creacion = models.DateTimeField(auto_now_add=True)

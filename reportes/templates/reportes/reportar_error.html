@@ -6,35 +6,22 @@
         <div class="col-lg-8">
             <h2 class="mb-4">Reportar un Error</h2>
 
-            {% if form.errors %}
-                <div class="alert alert-danger">Corrige los errores marcados en el formulario.</div>
-            {% endif %}
-
-            <form method="post" enctype="multipart/form-data" novalidate>
+            <form id="formReporte" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
 
                 <div class="mb-3">
                     <label class="form-label fw-bold">Título *</label>
                     {{ form.titulo }}
-                    {% if form.titulo.errors %}
-                        <div class="invalid-feedback d-block">{{ form.titulo.errors.0 }}</div>
-                    {% endif %}
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label fw-bold">Categoría *</label>
                     {{ form.categoria }}
-                    {% if form.categoria.errors %}
-                        <div class="invalid-feedback d-block">{{ form.categoria.errors.0 }}</div>
-                    {% endif %}
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label fw-bold">Descripción del problema *</label>
                     {{ form.descripcion }}
-                    {% if form.descripcion.errors %}
-                        <div class="invalid-feedback d-block">{{ form.descripcion.errors.0 }}</div>
-                    {% endif %}
                 </div>
 
                 <div class="row">
@@ -56,7 +43,7 @@
                             Seleccionar archivo
                         </label>
                         <div class="form-control text-muted" id="file-name" style="background-color: #fff; border: 1px solid #ced4da; overflow: hidden; white-space: nowrap;">
-                            Ningún archivo seleccionado
+                            {% if form.instance.captura_pantalla %}Imagen actual: {{ form.instance.captura_pantalla.name }}{% else %}Ningún archivo seleccionado{% endif %}
                         </div>
                     </div>
 
@@ -65,43 +52,116 @@
                     </div>
 
                     <div id="file-error" class="d-none mt-2 alert alert-danger p-2" style="font-size: 0.875rem;"></div>
-
-                    {% if form.captura_pantalla.errors %}
-                        <div class="text-danger mt-1" style="font-size: 0.875rem;">{{ form.captura_pantalla.errors.0 }}</div>
-                    {% endif %}
                 </div>
+
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label class="form-label fw-bold">Tu nombre *</label>
                         {{ form.nombre_reportante }}
-                        {% if form.nombre_reportante.errors %}
-                            <div class="invalid-feedback d-block">{{ form.nombre_reportante.errors.0 }}</div>
-                        {% endif %}
                     </div>
                     <div class="col-md-6 mb-3">
                         <label class="form-label fw-bold">Tu email *</label>
                         {{ form.email_reportante }}
-                        {% if form.email_reportante.errors %}
-                            <div class="invalid-feedback d-block">{{ form.email_reportante.errors.0 }}</div>
-                        {% endif %}
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-danger">Enviar Reporte</button>
+                <button type="button" class="btn btn-danger" onclick="validarYConfirmar()">Enviar Reporte</button>
             </form>
         </div>
     </div>
 </div>
 
+<div class="modal fade" id="modalConfirmacion" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmar envío</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                ¿Está seguro de que desea enviar este reporte?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="procesarEnvio()">Confirmar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
+    function validarYConfirmar() {
+        const form = document.getElementById('formReporte');
+        
+        // Verificamos si todos los campos obligatorios están llenos
+        if (form.checkValidity()) {
+            const modal = new bootstrap.Modal(document.getElementById('modalConfirmacion'));
+            modal.show();
+        } else {
+            // Si falta algo, disparamos un evento para que nuestros mensajes en español se muestren
+            form.querySelectorAll(':invalid').forEach(input => {
+                input.dispatchEvent(new Event('invalid', { cancelable: true }));
+            });
+        }
+    }
+
+    function procesarEnvio() {
+        // Enviar definitivamente el formulario al backend
+        document.getElementById('formReporte').submit();
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('formReporte');
+        const inputs = form.querySelectorAll('input, textarea, select');
+        
+        // --- 1. INTERCEPTOR DE MENSAJES EN INGLÉS ---
+        inputs.forEach(input => {
+            // Cuando el navegador detecta que un campo obligatorio está vacío...
+            input.addEventListener('invalid', function(e) {
+                // BLOQUEAMOS el mensaje en inglés por defecto del navegador
+                e.preventDefault(); 
+                
+                // Pintamos el borde de rojo
+                input.classList.add('is-invalid'); 
+                
+                // Limpiamos mensajes de error duplicados
+                const existingErr = input.parentNode.querySelector('.js-custom-error');
+                if (existingErr) existingErr.remove();
+
+                // Creamos nuestro propio mensaje de error en español
+                const err = document.createElement('div');
+                err.className = 'invalid-feedback d-block js-custom-error';
+                
+                // Asignamos el mensaje en español según el tipo de error
+                if (input.validity.valueMissing) {
+                    err.textContent = 'Este campo es obligatorio.';
+                } else if (input.validity.typeMismatch && input.type === 'email') {
+                    err.textContent = 'Por favor, introduce un correo electrónico válido.';
+                } else {
+                    err.textContent = 'Por favor, revisa la información de este campo.';
+                }
+                
+                // Insertamos el mensaje debajo del campo
+                input.parentNode.appendChild(err);
+            });
+
+            // Cuando el usuario empiece a escribir, quitamos el error rojo
+            input.addEventListener('input', function() {
+                input.classList.remove('is-invalid');
+                const existingErr = input.parentNode.querySelector('.js-custom-error');
+                if (existingErr) existingErr.remove();
+            });
+        });
+
+        // --- 2. VALIDACIÓN DE EVIDENCIAS (ÉPICA) ---
         const fileInput = document.getElementById('id_captura_pantalla');
         const fileNameDisplay = document.getElementById('file-name');
         const fileError = document.getElementById('file-error');
 
         if (fileInput) {
+            fileInput.setAttribute('accept', '.jpg,.jpeg,.png');
+
             fileInput.addEventListener('change', function(event) {
-                // 1. Limpiar estados previos y ocultar alerta
                 fileError.classList.add('d-none');
                 fileError.textContent = '';
                 fileNameDisplay.classList.remove('text-danger');
@@ -109,22 +169,18 @@
 
                 if (this.files && this.files.length > 0) {
                     const file = this.files[0];
-                    
-                    // Mostrar el nombre del archivo seleccionado
                     fileNameDisplay.textContent = file.name;
                     fileNameDisplay.classList.remove('text-muted'); 
 
-                    // 2. Validar Peso (5MB)
                     const maxSize = 5 * 1024 * 1024; 
                     if (file.size > maxSize) {
                         fileError.textContent = "El archivo es demasiado pesado. El límite máximo es de 5 MB.";
                         fileError.classList.remove('d-none');
                         fileNameDisplay.classList.add('text-danger');
-                        this.value = ''; // Borra el archivo para que no se envíe
+                        this.value = ''; 
                         return;
                     }
 
-                    // 3. Validar Formato de Seguridad
                     const allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
                     if (!allowedExtensions.test(file.name)) {
                         fileError.textContent = "Formato no válido. Solo se permiten imágenes (JPG, JPEG, PNG).";
@@ -135,8 +191,12 @@
                     }
 
                 } else {
-                    fileNameDisplay.textContent = "Ningún archivo seleccionado";
-                    fileNameDisplay.classList.add('text-muted');
+                    {% if form.instance.captura_pantalla %}
+                        fileNameDisplay.textContent = "Imagen actual: {{ form.instance.captura_pantalla.name }}";
+                    {% else %}
+                        fileNameDisplay.textContent = "Ningún archivo seleccionado";
+                        fileNameDisplay.classList.add('text-muted');
+                    {% endif %}
                 }
             });
         }
