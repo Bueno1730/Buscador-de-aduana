@@ -216,20 +216,11 @@ def pantalla_chat(request):
 def chat_inteligente(request):
     if request.method == 'POST':
         
-        # --- VALIDACIÓN DE DEGRADACIÓN ELEGANTE ---
+        # 1. Validación de existencia del modelo
         if not modelo_ia:
-            mensaje_ayuda = (
-                "⚠️ **Aviso del Sistema:**\n"
-                "Hola, soy Sisa. Para poder responderte, necesito que configures mi motor de Inteligencia Artificial.\n\n"
-                "**Instrucciones para desarrolladores:**\n"
-                "1. Crea un archivo `.env` en la raíz del proyecto.\n"
-                "2. Añade la variable `GEMINI_API_KEY=tu_clave_aqui`.\n"
-                "3. Reinicia el servidor de Django."
-            )
-            return JsonResponse({'respuesta': mensaje_ayuda})
+            return JsonResponse({'respuesta': "⚠️ Error: El motor de IA no está configurado (falta API Key)."})
 
         pregunta_usuario = request.POST.get('pregunta', '').strip()
-
         if not pregunta_usuario:
             return JsonResponse({'respuesta': 'Por favor, escribe una pregunta.'})
 
@@ -315,12 +306,15 @@ def chat_inteligente(request):
         Pregunta del usuario: {pregunta_usuario}
         """
 
-        # 5. LLAMAR A LA IA
         try:
+            print("🚀 Enviando prompt a Gemini...") # Para ver en la terminal
             respuesta_ia = modelo_ia.generate_content(prompt_maestro)
             texto_respuesta = respuesta_ia.text
         except Exception as e:
-            texto_respuesta = "Hubo un error al intentar conectar con el motor de Inteligencia Artificial."
+            # ESTA ES LA MODIFICACIÓN: Ahora verás el error real en el chat
+            error_msg = f"❌ Error técnico de IA: {str(e)}"
+            print(error_msg) # También lo verás en la consola
+            return JsonResponse({'respuesta': error_msg})
 
         return JsonResponse({'respuesta': texto_respuesta})
 
