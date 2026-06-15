@@ -45,7 +45,8 @@ urlpatterns = [
     path('carga-masiva/', views.carga_masiva, name='carga_masiva'),
     path('chat-ia/', views.chat_inteligente, name='chat_ia'),
     path('asistente/', views.pantalla_chat, name='pantalla_chat'), 
-    path('api/chat/', views.chat_inteligente, name='chat_ia')
+    path('api/chat/', views.chat_inteligente, name='chat_ia'),
+    path('referencias/', include('referencias.urls')),
 ]
 
 if settings.DEBUG:

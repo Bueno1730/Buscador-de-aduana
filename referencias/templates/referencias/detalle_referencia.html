@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ referencia.titulo }} - SISARM</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f9f9f9;
+            margin: 0;
+        }
+        .btn-volver {
+            display: inline-block;
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            background-color: #475569;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        .btn-volver:hover {
+            background-color: #334155;
+        }
+        .contenedor-detalle {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 30px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .etiqueta-tipo {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+        }
+        .etiqueta-tipo--resolucion { background-color: #2563eb; }
+        .etiqueta-tipo--caso_estudio { background-color: #7c3aed; }
+        .etiqueta-tipo--circular { background-color: #059669; }
+        .etiqueta-tipo--normativa { background-color: #d97706; }
+        .etiqueta-tipo--dictamen { background-color: #dc2626; }
+        .etiqueta-tipo--otro { background-color: #64748b; }
+
+        h1 {
+            color: #1e293b;
+            font-size: 24px;
+            margin: 10px 0 5px 0;
+        }
+        .meta-principal {
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+        .meta-principal span {
+            margin-right: 20px;
+        }
+        .seccion {
+            margin-bottom: 25px;
+        }
+        .seccion h3 {
+            color: #334155;
+            font-size: 16px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+        }
+        .seccion p {
+            color: #475569;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+        .acciones {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+            flex-wrap: wrap;
+        }
+        .btn-accion {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background-color: #f1f5f9;
+            color: #2563eb;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        .btn-accion:hover {
+            background-color: #e2e8f0;
+        }
+        .codigos-lista {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .codigo-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            background-color: #eff6ff;
+            color: #2563eb;
+            border: 1px solid #bfdbfe;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+        .codigo-badge:hover {
+            background-color: #dbeafe;
+        }
+        .info-adicional {
+            background-color: #f8fafc;
+            border-radius: 6px;
+            padding: 15px;
+            font-size: 13px;
+            color: #64748b;
+        }
+        .info-adicional p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <a href="{% url 'referencias:lista' %}" class="btn-volver">⬅ Volver a Referencias</a>
+
+    <div class="contenedor-detalle">
+        <span class="etiqueta-tipo etiqueta-tipo--{{ referencia.tipo }}">{{ referencia.get_tipo_display }}</span>
+        <h1>{{ referencia.titulo }}</h1>
+        <div class="meta-principal">
+            <span>🏛️ {{ referencia.get_entidad_emisora_display }}</span>
+            <span>📅 {{ referencia.fecha_emision|date:"d/m/Y" }}</span>
+            <span>🆔 Registro #{{ referencia.id }}</span>
+        </div>
+
+        <div class="seccion">
+            <h3>Descripción</h3>
+            <p>{{ referencia.descripcion|linebreaks }}</p>
+        </div>
+
+        {% if referencia.codigos_arancelarios.exists %}
+        <div class="seccion">
+            <h3>Códigos Arancelarios Relacionados</h3>
+            <div class="codigos-lista">
+                {% for codigo in referencia.codigos_arancelarios.all %}
+                    <a href="{% url 'detalle_arancel' codigo.id %}" class="codigo-badge">
+                        {{ codigo.codigo }}
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="acciones">
+            {% if referencia.archivo %}
+                <a href="{{ referencia.archivo.url }}" target="_blank" class="btn-accion">
+                    📄 Descargar PDF
+                </a>
+            {% endif %}
+            {% if referencia.enlace %}
+                <a href="{{ referencia.enlace }}" target="_blank" class="btn-accion">
+                    🔗 Abrir enlace externo
+                </a>
+            {% endif %}
+            <a href="{% url 'busqueda' %}" class="btn-accion">
+                🔍 Ir a Búsqueda de Aranceles
+            </a>
+        </div>
+
+        <div class="info-adicional">
+            <p><strong>Registrado el:</strong> {{ referencia.fecha_creacion|date:"d/m/Y H:i" }}</p>
+            <p><strong>Última actualización:</strong> {{ referencia.fecha_actualizacion|date:"d/m/Y H:i" }}</p>
+        </div>
+    </div>
+</body>
+</html>

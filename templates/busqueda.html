@@ -142,7 +142,12 @@
 </head>
 <body>
 
-    <a href="{% url 'home' %}" class="btn-volver">⬅ Volver al Menú Principal</a>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+        <a href="{% url 'home' %}" class="btn-volver" style="margin-bottom: 0;">⬅ Volver al Menú Principal</a>
+        <a href="{% url 'referencias:lista' %}" style="display: inline-block; padding: 10px 15px; background-color: #0d9488; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; transition: background-color 0.3s;">
+            📚 Consultar Referencias de Clasificación
+        </a>
+    </div>
 
     <div class="contenedor-buscador">
         <form method="GET" action="" class="bloques-busqueda">

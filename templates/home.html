@@ -30,6 +30,10 @@
                 🔍 Buscar Arancel
             </a>
 
+            <a href="{% url 'referencias:lista' %}" class="block w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-4 rounded transition duration-300 shadow-sm">
+                📚 Referencias de Clasificación
+            </a>
+
             {% if not user.is_staff %}
                 <a href="{% url 'reportes:reportar' %}" class="block w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-4 rounded transition duration-300 shadow-sm">
                     ⚠️ Reportar un Error
