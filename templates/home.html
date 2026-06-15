@@ -50,6 +50,9 @@
                 <a href="{% url 'auditoria' %}" class="block w-full bg-gray-800 hover:bg-gray-900 text-white font-bold py-3 px-4 rounded transition duration-300 shadow-sm">
                     🛡️ Ver Auditoría de Búsquedas
                 </a>
+                <a href="{% url 'carga_masiva' %}" class="flex items-center justify-center gap-2 w-full py-3 px-4 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-md shadow transition duration-300">
+                    📂 Carga Masiva de Aranceles (Excel/CSV)
+                </a>
             {% endif %}
 
         </div>
@@ -64,6 +67,97 @@
         </div>
         
     </div>
+
+    <style>
+        /* Contenedor principal fijado abajo a la derecha */
+        .contenedor-flotante {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        /* La burbuja de texto que desaparecerá */
+        .burbuja-mensaje {
+            background-color: #1e293b;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative;
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* El piquito del globo de texto apuntando al botón */
+        .burbuja-mensaje::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: -6px;
+            transform: translateY(-50%);
+            border-width: 6px 0 6px 6px;
+            border-style: solid;
+            border-color: transparent transparent transparent #1e293b;
+        }
+
+        /* Clase que usará JS para ocultar el mensaje */
+        .ocultar-burbuja {
+            opacity: 0;
+            transform: translateX(10px);
+            pointer-events: none; /* Para que no estorbe si se le hace clic por accidente */
+        }
+
+        /* El botón circular */
+        .boton-ia {
+            width: 60px;
+            height: 60px;
+            background-color: #2563eb;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 28px;
+            text-decoration: none;
+            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.4);
+            transition: transform 0.3s, background-color 0.3s;
+            cursor: pointer;
+        }
+
+        .boton-ia:hover {
+            transform: scale(1.1);
+            background-color: #1d4ed8;
+        }
+    </style>
+
+    <div class="contenedor-flotante">
+        <div id="mensaje-bienvenida-ia" class="burbuja-mensaje">
+            ¡Hola! Pregúntale a Sisa 💡
+        </div>
+        
+        <a href="{% url 'pantalla_chat' %}" class="boton-ia" title="Hablar con Sisa">
+            🤖
+        </a>
+    </div>
+
+    <script>
+        // Este script cuenta 5 segundos y luego oculta la burbuja
+        document.addEventListener("DOMContentLoaded", function() {
+            setTimeout(function() {
+                var mensaje = document.getElementById("mensaje-bienvenida-ia");
+                if (mensaje) {
+                    mensaje.classList.add("ocultar-burbuja");
+                }
+            }, 5000);
+        });
+    </script>
 
 </body>
 </html>

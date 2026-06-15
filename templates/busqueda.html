@@ -9,54 +9,105 @@
             padding: 20px;
             background-color: #f9f9f9;
         }
+
+        /* --- SOLUCIÓN 2: Botón para volver sin usar el historial del navegador --- */
+        .btn-volver {
+            display: inline-block;
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            background-color: #475569;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        .btn-volver:hover {
+            background-color: #334155;
+        }
         
-        /* Estilos del buscador superior */
+        /* Contenedor principal del panel de búsqueda */
         .contenedor-buscador {
             margin-bottom: 20px;
             background-color: #fff;
-            padding: 20px;
+            padding: 25px;
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        
-        /* Flexbox para alinear todo en una sola línea */
-        .fila-busqueda {
+
+        /* Alineación modular de los paneles */
+        .bloques-busqueda {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            align-items: flex-end;
+            margin-bottom: 15px;
+        }
+
+        .grupo-campo {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .grupo-campo label {
+            font-size: 14px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        /* Estilos específicos para los 5 cuadros numéricos */
+        .contenedor-cuadros {
             display: flex;
             align-items: center;
-            gap: 15px; /* Espacio entre los elementos */
-            margin-top: 15px;
+            gap: 4px;
+            background-color: #f1f5f9;
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
         }
 
-        .contenedor-buscador input[type="text"] {
-            padding: 10px;
-            width: 250px;
+        .cuadro-digito {
+            width: 35px;
+            padding: 8px 4px;
             font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        /* Estilos para el menú desplegable */
-        .contenedor-buscador select {
-            padding: 10px;
-            font-size: 16px;
-            border: 1px solid #ccc;
+            font-weight: bold;
+            text-align: center;
+            border: 1px solid #94a3b8;
             border-radius: 4px;
             background-color: white;
-            cursor: pointer;
         }
 
-        .contenedor-buscador button {
-            padding: 10px 25px;
+        .separador-punto {
+            font-size: 18px;
+            font-weight: bold;
+            color: #475569;
+            padding: 0 2px;
+        }
+
+        /* Estilos de inputs de texto y select */
+        .input-palabra-clave {
+            padding: 13px;
+            font-size: 15px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+        }
+
+        /* Botón de acción principal */
+        .btn-buscar {
+            padding: 12px 30px;
             font-size: 16px;
+            font-weight: bold;
             background-color: #0056b3;
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
             transition: background-color 0.3s;
+            height: 48px;
         }
 
-        .contenedor-buscador button:hover {
+        .btn-buscar:hover {
             background-color: #004494;
         }
 
@@ -64,22 +115,20 @@
         table {
             border-collapse: collapse;
             width: 100%;
-            font-size: 11px; /* Letra pequeña como en la imagen */
+            font-size: 11px;
             background-color: white;
         }
         th, td {
-            border: 1px solid #555; /* Bordes oscuros */
+            border: 1px solid #555;
             padding: 6px;
             text-align: center;
         }
         
-        /* Color beige/marrón clarito para la cabecera */
         thead th {
             background-color: #e6dfc8; 
             font-weight: normal;
         }
         
-        /* Filas grises separadoras */
         .fila-gris td {
             background-color: #8c8c8c;
             color: white;
@@ -87,34 +136,53 @@
             text-align: left;
         }
         
-        /* Ajustes de texto */
         .texto-izq { text-align: left; }
         .negrita { font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <div class="contenedor-buscador">
-        <label for="codigo_buscar" style="font-size: 18px; color: #333;">
-            <strong>Búsqueda por Nomenclatura o Palabra Clave</strong>
-        </label>
-        
-        <form class="fila-busqueda" method="GET" action="">
-            <input type="text" id="codigo_buscar" name="codigo" placeholder="Ej: 0101.21.00.00 o 'Caballos'" value="{{ request.GET.codigo }}">
-            
-            <select name="tipo_filtro" id="tipo_filtro">
-                <option value="todo">Buscar en todo</option>
-                <option value="capitulo">Capítulo (2 dígitos)</option>
-                <option value="partida">Partida (4 dígitos)</option>
-                <option value="subpartida_sa">Subpartida SA (6 dígitos)</option>
-                <option value="subpartida_andina">Subpartida Andina (8 dígitos)</option>
-                <option value="subpartida_nacional">Subpartida Nacional (10 dígitos)</option>
-            </select>
+    <a href="{% url 'home' %}" class="btn-volver">⬅ Volver al Menú Principal</a>
 
-            <button type="submit">Buscar</button>
+    <div class="contenedor-buscador">
+        <form method="GET" action="" class="bloques-busqueda">
+            
+            <div class="grupo-campo">
+                <label>Nomenclatura Arancelaria:</label>
+                <div class="contenedor-cuadros">
+                    <input type="text" name="box1" class="cuadro-digito box-input" maxlength="2" placeholder="00" value="{{ box1 }}" autocomplete="off">
+                    <input type="text" name="box2" class="cuadro-digito box-input" maxlength="2" placeholder="00" value="{{ box2 }}" autocomplete="off">
+                    <span class="separador-punto">.</span>
+                    <input type="text" name="box3" class="cuadro-digito box-input" maxlength="2" placeholder="00" value="{{ box3 }}" autocomplete="off">
+                    <span class="separador-punto">.</span>
+                    <input type="text" name="box4" class="cuadro-digito box-input" maxlength="2" placeholder="00" value="{{ box4 }}" autocomplete="off">
+                    <span class="separador-punto">.</span>
+                    <input type="text" name="box5" class="cuadro-digito box-input" maxlength="2" placeholder="00" value="{{ box5 }}" autocomplete="off">
+                </div>
+            </div>
+
+            <div class="grupo-campo">
+                <label for="texto_buscar">Palabra Clave (Solo letras):</label>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <input type="text" id="texto_buscar" name="texto_buscar" class="input-palabra-clave" style="width: 280px;"
+                           placeholder="Ej: Caballos, Bovinos..." value="{{ texto_buscar }}" autocomplete="off"
+                           oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ ]/g, '')">
+                    
+                    <select name="capitulo" class="input-palabra-clave" style="width: 180px; cursor: pointer;">
+                        <option value="">En todo el arancel</option>
+                        {% for cap in capitulos_disponibles %}
+                            <option value="{{ cap }}" {% if cap == capitulo_seleccionado %}selected{% endif %}>
+                                Solo Capítulo {{ cap }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-buscar">Buscar</button>
         </form>
     </div>
-
+    
     <table>
         <thead>
             <tr>
@@ -183,12 +251,32 @@
             {% else %}
                 <tr>
                     <td colspan="13" style="text-align: center; padding: 20px; font-size: 14px;">
-                        No se encontraron registros. Ingresa un código arancelario en el buscador superior.
+                        No se encontraron registros. Completa los campos numéricos o la palabra clave en el panel superior.
                     </td>
                 </tr>
             {% endif %}
         </tbody>
     </table>
+
+    <script>
+        document.querySelectorAll('.box-input').forEach((input, index, inputs) => {
+            // Evento al escribir: Solo números y salto automático adelante
+            input.addEventListener('input', (e) => {
+                input.value = input.value.replace(/[^0-9]/g, ''); // Forzar solo números
+                
+                if (input.value.length === 2 && index < inputs.length - 1) {
+                    inputs[index + 1].focus(); // Salta al siguiente cuadro
+                }
+            });
+
+            // Evento de teclado: Regresar con el botón de borrar (Backspace)
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && input.value.length === 0 && index > 0) {
+                    inputs[index - 1].focus(); // Regresa al cuadro anterior
+                }
+            });
+        });
+    </script>
 
 </body>
 </html>

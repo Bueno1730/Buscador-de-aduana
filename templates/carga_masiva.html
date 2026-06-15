@@ -1,0 +1,31 @@
+{% extends 'base.html' %} {% block content %}
+<div class="max-w-2xl mx-auto mt-10 bg-white p-8 rounded-lg shadow-md border border-gray-200">
+    <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">📂 Carga Masiva de Aranceles</h2>
+    
+    <p class="text-gray-600 mb-6 text-center">
+        Sube el catálogo oficial en formato <strong>.xlsx</strong> o <strong>.csv</strong>. Asegúrate de que las columnas coincidan exactamente con la estructura de la base de datos.
+    </p>
+
+    <form method="POST" enctype="multipart/form-data" class="flex flex-col gap-4">
+        {% csrf_token %}
+        
+        <div class="flex items-center justify-center w-full">
+            <label class="flex flex-col items-center justify-center w-full h-40 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                    <p class="mb-2 text-sm text-gray-500 font-semibold">Haz clic para seleccionar el archivo Excel o CSV</p>
+                </div>
+                <input type="file" name="archivo" class="hidden" accept=".csv, .xlsx" required />
+            </label>
+        </div>
+
+        <div class="flex gap-4 mt-4">
+            <a href="{% url 'home' %}" class="w-1/2 text-center py-2 px-4 bg-gray-500 hover:bg-gray-600 text-white font-bold rounded-md transition duration-300">
+                Volver al Menú
+            </a>
+            <button type="submit" style="background-color: #16a34a; color: white; padding: 10px 20px; font-weight: bold; border-radius: 6px; border: none; cursor: pointer; width: 50%; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+                Subir e Importar
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
