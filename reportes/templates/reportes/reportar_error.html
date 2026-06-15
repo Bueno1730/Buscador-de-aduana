@@ -163,23 +163,18 @@
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('formReporte');
             const inputs = form.querySelectorAll('input, textarea, select');
-            
+
             // --- 1. INTERCEPTOR DE MENSAJES EN ESPAÑOL Y DISEÑO ROJO ---
             inputs.forEach(input => {
                 input.addEventListener('invalid', function(e) {
-                    e.preventDefault(); 
-                    
-                    // Añadir borde rojo con clase CSS inyectada
-                    input.classList.add('input-error'); 
-                    
-                    // Limpiar mensajes duplicados
+                    e.preventDefault();
+                    input.classList.add('input-error');
                     const existingErr = input.parentNode.querySelector('.js-custom-error');
                     if (existingErr) existingErr.remove();
 
-                    // Mensaje de error personalizado Tailwind
                     const err = document.createElement('div');
                     err.className = 'text-red-600 text-sm mt-1 font-bold js-custom-error';
-                    
+
                     if (input.validity.valueMissing) {
                         err.textContent = 'Este campo es obligatorio.';
                     } else if (input.validity.typeMismatch && input.type === 'email') {
@@ -187,17 +182,82 @@
                     } else {
                         err.textContent = 'Por favor, revisa la información de este campo.';
                     }
-                    
+
                     input.parentNode.appendChild(err);
                 });
 
-                // Al escribir, quitar error
                 input.addEventListener('input', function() {
                     input.classList.remove('input-error');
                     const existingErr = input.parentNode.querySelector('.js-custom-error');
                     if (existingErr) existingErr.remove();
                 });
             });
+
+            // --- 2. NOMBRE: solo letras y espacios, bloquear números ---
+            const campoNombre = document.getElementById('id_nombre_reportante');
+            if (campoNombre) {
+                campoNombre.addEventListener('keypress', function(e) {
+                    const char = String.fromCharCode(e.which);
+                    if (/[0-9]/.test(char)) {
+                        e.preventDefault();
+                    }
+                });
+                campoNombre.addEventListener('input', function() {
+                    this.value = this.value.replace(/[0-9]/g, '');
+                });
+            }
+
+            // --- 3. EMAIL: bloquear espacios y validar formato ---
+            const campoEmail = document.getElementById('id_email_reportante');
+            if (campoEmail) {
+                campoEmail.addEventListener('keypress', function(e) {
+                    if (e.key === ' ') {
+                        e.preventDefault();
+                    }
+                });
+                campoEmail.addEventListener('input', function() {
+                    this.value = this.value.replace(/\s/g, '');
+                });
+                campoEmail.addEventListener('blur', function() {
+                    const existingErr = this.parentNode.querySelector('.js-custom-error');
+                    if (existingErr) existingErr.remove();
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (this.value && !emailRegex.test(this.value)) {
+                        this.classList.add('input-error');
+                        const err = document.createElement('div');
+                        err.className = 'text-red-600 text-sm mt-1 font-bold js-custom-error';
+                        err.textContent = 'Por favor, introduce un correo electrónico válido.';
+                        this.parentNode.appendChild(err);
+                    }
+                });
+            }
+
+            // --- 4. PARTIDA ARANCELARIA: solo números y puntos, sin espacios ---
+            const campoPartida = document.getElementById('id_partida_arancelaria_afectada');
+            if (campoPartida) {
+                campoPartida.addEventListener('keypress', function(e) {
+                    const char = String.fromCharCode(e.which);
+                    if (!/[0-9.]/.test(char)) {
+                        e.preventDefault();
+                    }
+                });
+                campoPartida.addEventListener('input', function() {
+                    this.value = this.value.replace(/[^0-9.]/g, '');
+                });
+            }
+
+            // --- 5. CÓDIGO DE PRODUCTO: bloquear espacios ---
+            const campoCodigo = document.getElementById('id_codigo_producto_afectado');
+            if (campoCodigo) {
+                campoCodigo.addEventListener('keypress', function(e) {
+                    if (e.key === ' ') {
+                        e.preventDefault();
+                    }
+                });
+                campoCodigo.addEventListener('input', function() {
+                    this.value = this.value.replace(/\s/g, '');
+                });
+            }
 
             // --- 2. VALIDACIÓN DE EVIDENCIAS (ÉPICA) ---
             const fileInput = document.getElementById('id_captura_pantalla');
