@@ -10,7 +10,6 @@
             background-color: #f9f9f9;
         }
 
-        /* --- SOLUCIÓN 2: Botón para volver sin usar el historial del navegador --- */
         .btn-volver {
             display: inline-block;
             margin-bottom: 15px;
@@ -26,7 +25,6 @@
             background-color: #334155;
         }
         
-        /* Contenedor principal del panel de búsqueda */
         .contenedor-buscador {
             margin-bottom: 20px;
             background-color: #fff;
@@ -35,7 +33,6 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
-        /* Alineación modular de los paneles */
         .bloques-busqueda {
             display: flex;
             flex-wrap: wrap;
@@ -56,7 +53,6 @@
             color: #555;
         }
 
-        /* Estilos específicos para los 5 cuadros numéricos */
         .contenedor-cuadros {
             display: flex;
             align-items: center;
@@ -85,7 +81,6 @@
             padding: 0 2px;
         }
 
-        /* Estilos de inputs de texto y select */
         .input-palabra-clave {
             padding: 13px;
             font-size: 15px;
@@ -93,7 +88,6 @@
             border-radius: 6px;
         }
 
-        /* Botón de acción principal */
         .btn-buscar {
             padding: 12px 30px;
             font-size: 16px;
@@ -111,7 +105,6 @@
             background-color: #004494;
         }
 
-        /* Estilos de la tabla tipo Arancel */
         table {
             border-collapse: collapse;
             width: 100%;
@@ -138,6 +131,18 @@
         
         .texto-izq { text-align: left; }
         .negrita { font-weight: bold; }
+
+        /* CRITERIO 4: Alineación perfecta para comparación vertical */
+        .col-tributos {
+            text-align: center !important;
+            vertical-align: middle !important;
+            font-size: 12px;
+            color: #1f2937;
+        }
+        /* Resaltado sutil para la columna de Gravamen Arancelario */
+        .col-ga {
+            background-color: #f8fafc;
+        }
     </style>
 </head>
 <body>
@@ -151,7 +156,6 @@
 
     <div class="contenedor-buscador">
         <form method="GET" action="" class="bloques-busqueda">
-            
             <div class="grupo-campo">
                 <label>Nomenclatura Arancelaria:</label>
                 <div class="contenedor-cuadros">
@@ -196,6 +200,7 @@
                 <th rowspan="3">GA<br>%</th>
                 <th rowspan="3">ICE -<br>IEHD</th>
                 <th rowspan="3">Unidad<br>de<br>Medida</th>
+                
                 <th rowspan="3">Despacho en<br>Frontera</th>
                 <th colspan="3">Documento Adicional para el Despacho Aduanero</th>
                 <th colspan="4">Preferencias Arancelarias</th>
@@ -238,9 +243,19 @@
                             </a>
                         </td>
                         <td class="texto-izq">{{ item.descripcion }}</td>
-                        <td class="negrita">{{ item.ga_porcentaje|default_if_none:"" }}</td>
-                        <td>{{ item.ice_iehd|default_if_none:"" }}</td>
-                        <td>{{ item.unidad_medida|default_if_none:"" }}</td>
+                        
+                        <td class="negrita col-tributos col-ga">
+                            {% if item.ga_porcentaje is not None %}{{ item.ga_porcentaje }}%{% else %}0%{% endif %}
+                        </td>
+                        
+                        <td class="col-tributos">
+                            {% if item.ice_iehd %}{{ item.ice_iehd }}{% else %}N/A{% endif %}
+                        </td>
+                        
+                        <td class="col-tributos">
+                            {% if item.unidad_medida %}{{ item.unidad_medida }}{% else %}N/A{% endif %}
+                        </td>
+                        
                         <td>{{ item.despacho_frontera|default_if_none:"" }}</td>
                         <td>{{ item.doc_tipo|default_if_none:"" }}</td>
                         <td>{{ item.doc_entidad|default_if_none:"" }}</td>
@@ -265,19 +280,17 @@
 
     <script>
         document.querySelectorAll('.box-input').forEach((input, index, inputs) => {
-            // Evento al escribir: Solo números y salto automático adelante
             input.addEventListener('input', (e) => {
-                input.value = input.value.replace(/[^0-9]/g, ''); // Forzar solo números
+                input.value = input.value.replace(/[^0-9]/g, ''); 
                 
                 if (input.value.length === 2 && index < inputs.length - 1) {
-                    inputs[index + 1].focus(); // Salta al siguiente cuadro
+                    inputs[index + 1].focus();
                 }
             });
 
-            // Evento de teclado: Regresar con el botón de borrar (Backspace)
             input.addEventListener('keydown', (e) => {
                 if (e.key === 'Backspace' && input.value.length === 0 && index > 0) {
-                    inputs[index - 1].focus(); // Regresa al cuadro anterior
+                    inputs[index - 1].focus(); 
                 }
             });
         });
