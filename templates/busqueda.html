@@ -10,6 +10,7 @@
             background-color: #f9f9f9;
         }
 
+        /* --- SOLUCIÓN 2: Botón para volver sin usar el historial del navegador --- */
         .btn-volver {
             display: inline-block;
             margin-bottom: 15px;
@@ -25,6 +26,7 @@
             background-color: #334155;
         }
         
+        /* Contenedor principal del panel de búsqueda */
         .contenedor-buscador {
             margin-bottom: 20px;
             background-color: #fff;
@@ -33,6 +35,7 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
+        /* Alineación modular de los paneles */
         .bloques-busqueda {
             display: flex;
             flex-wrap: wrap;
@@ -53,6 +56,7 @@
             color: #555;
         }
 
+        /* Estilos específicos para los 5 cuadros numéricos */
         .contenedor-cuadros {
             display: flex;
             align-items: center;
@@ -81,6 +85,7 @@
             padding: 0 2px;
         }
 
+        /* Estilos de inputs de texto y select */
         .input-palabra-clave {
             padding: 13px;
             font-size: 15px;
@@ -88,6 +93,7 @@
             border-radius: 6px;
         }
 
+        /* Botón de acción principal */
         .btn-buscar {
             padding: 12px 30px;
             font-size: 16px;
@@ -105,6 +111,7 @@
             background-color: #004494;
         }
 
+        /* Estilos de la tabla tipo Arancel */
         table {
             border-collapse: collapse;
             width: 100%;
@@ -156,6 +163,7 @@
 
     <div class="contenedor-buscador">
         <form method="GET" action="" class="bloques-busqueda">
+            
             <div class="grupo-campo">
                 <label>Nomenclatura Arancelaria:</label>
                 <div class="contenedor-cuadros">
@@ -280,17 +288,19 @@
 
     <script>
         document.querySelectorAll('.box-input').forEach((input, index, inputs) => {
+            // Evento al escribir: Solo números y salto automático adelante
             input.addEventListener('input', (e) => {
-                input.value = input.value.replace(/[^0-9]/g, ''); 
+                input.value = input.value.replace(/[^0-9]/g, ''); // Forzar solo números
                 
                 if (input.value.length === 2 && index < inputs.length - 1) {
-                    inputs[index + 1].focus();
+                    inputs[index + 1].focus(); // Salta al siguiente cuadro
                 }
             });
 
+            // Evento de teclado: Regresar con el botón de borrar (Backspace)
             input.addEventListener('keydown', (e) => {
                 if (e.key === 'Backspace' && input.value.length === 0 && index > 0) {
-                    inputs[index - 1].focus(); 
+                    inputs[index - 1].focus(); // Regresa al cuadro anterior
                 }
             });
         });
