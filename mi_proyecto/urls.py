@@ -47,6 +47,13 @@ urlpatterns = [
     path('asistente/', views.pantalla_chat, name='pantalla_chat'), 
     path('api/chat/', views.chat_inteligente, name='chat_ia'),
     path('referencias/', include('referencias.urls')),
+    path('api/recurrentes/toggle/<int:arancel_id>/', views.toggle_recurrente, name='toggle_recurrente'),
+    path('api/recurrentes/mis-partidas/', views.mis_recurrentes, name='mis_recurrentes'),
+    path('api/recurrentes/categorias/', views.gestionar_categorias, name='gestionar_categorias'),
+    path('api/recurrentes/categorias/crear/', views.crear_categoria, name='crear_categoria'),
+    path('api/recurrentes/categorias/<int:categoria_id>/editar/', views.editar_categoria, name='editar_categoria'),
+    path('api/recurrentes/categorias/<int:categoria_id>/eliminar/', views.eliminar_categoria, name='eliminar_categoria'),
+    path('api/recurrentes/asignar-categoria/', views.asignar_categoria, name='asignar_categoria'),
 ]
 
 if settings.DEBUG:

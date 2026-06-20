@@ -132,16 +132,351 @@
         .texto-izq { text-align: left; }
         .negrita { font-weight: bold; }
 
-        /* CRITERIO 4: Alineación perfecta para comparación vertical */
         .col-tributos {
             text-align: center !important;
             vertical-align: middle !important;
             font-size: 12px;
             color: #1f2937;
         }
-        /* Resaltado sutil para la columna de Gravamen Arancelario */
         .col-ga {
             background-color: #f8fafc;
+        }
+
+        .panel-recurrentes {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .panel-recurrentes-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            background-color: #f0fdf4;
+            border-bottom: 1px solid #bbf7d0;
+            cursor: pointer;
+            user-select: none;
+        }
+        .panel-recurrentes-header h3 {
+            margin: 0;
+            font-size: 15px;
+            color: #166534;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .panel-recurrentes-header .toggle-icon {
+            font-size: 12px;
+            color: #166534;
+            transition: transform 0.3s;
+        }
+        .panel-recurrentes-header .toggle-icon.abierto {
+            transform: rotate(180deg);
+        }
+        .panel-recurrentes-body {
+            padding: 15px 20px;
+            display: none;
+        }
+        .panel-recurrentes-body.visible {
+            display: block;
+        }
+        .recurrente-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+            cursor: pointer;
+        }
+        .recurrente-item:hover {
+            background-color: #f0fdf4;
+        }
+        .recurrente-item .codigo-rec {
+            font-weight: bold;
+            color: #2563eb;
+            text-decoration: none;
+            min-width: 120px;
+        }
+        .recurrente-item .desc-rec {
+            flex: 1;
+            font-size: 12px;
+            color: #64748b;
+            margin: 0 15px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .recurrente-item .quitar-rec {
+            color: #ef4444;
+            cursor: pointer;
+            font-size: 16px;
+            background: none;
+            border: none;
+            padding: 2px 6px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+        .recurrente-item .quitar-rec:hover {
+            background-color: #fef2f2;
+        }
+        .recurrente-vacio {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 13px;
+            padding: 15px;
+        }
+
+        .star-btn {
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 6px;
+            transition: transform 0.2s;
+            display: inline-block;
+            background: none;
+            border: none;
+            padding: 0;
+        }
+        .star-btn:hover {
+            transform: scale(1.2);
+        }
+        .star-btn.activo {
+            animation: pop 0.3s ease;
+        }
+        @keyframes pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 14px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.4s ease;
+            z-index: 9999;
+        }
+        .toast.visible {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        .toast.exito {
+            background-color: #16a34a;
+        }
+        .toast.error {
+            background-color: #dc2626;
+        }
+
+        .filtros-categoria {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .filtro-cat {
+            padding: 4px 12px;
+            border-radius: 14px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+            background-color: #f1f5f9;
+            color: #475569;
+        }
+        .filtro-cat:hover {
+            opacity: 0.8;
+        }
+        .filtro-cat.activo {
+            border-color: currentColor;
+            box-shadow: 0 0 0 1px currentColor;
+        }
+
+        .rec-select-cat {
+            font-size: 11px;
+            padding: 2px 6px;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            background-color: white;
+            cursor: pointer;
+            max-width: 130px;
+        }
+        .rec-select-cat:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+
+        .btn-gestion {
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            background-color: white;
+            cursor: pointer;
+            color: #475569;
+            transition: background-color 0.2s;
+        }
+        .btn-gestion:hover {
+            background-color: #f8fafc;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0,0,0,0.4);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        }
+        .modal-overlay.visible {
+            display: flex;
+        }
+        .modal-contenido {
+            background-color: white;
+            border-radius: 12px;
+            padding: 25px;
+            width: 420px;
+            max-width: 95%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+        .modal-contenido h3 {
+            margin: 0 0 5px 0;
+            font-size: 18px;
+            color: #1e293b;
+        }
+        .modal-contenido .sub {
+            color: #64748b;
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+        .modal-campo {
+            margin-bottom: 15px;
+        }
+        .modal-campo label {
+            display: block;
+            font-size: 13px;
+            font-weight: bold;
+            color: #475569;
+            margin-bottom: 5px;
+        }
+        .modal-campo input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        .colores-preset {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .color-opcion {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.2s;
+        }
+        .color-opcion:hover {
+            transform: scale(1.15);
+        }
+        .color-opcion.seleccionado {
+            border-color: #1e293b;
+            transform: scale(1.15);
+        }
+        .modal-acciones {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        .modal-acciones button {
+            padding: 9px 20px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+            border: none;
+            transition: opacity 0.2s;
+        }
+        .modal-acciones button:hover {
+            opacity: 0.85;
+        }
+        .btn-modal-primario {
+            background-color: #2563eb;
+            color: white;
+        }
+        .btn-modal-secundario {
+            background-color: #e2e8f0;
+            color: #475569;
+        }
+        .btn-modal-peligro {
+            background-color: #ef4444;
+            color: white;
+        }
+
+        .item-categoria {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 12px;
+            border-radius: 8px;
+            background-color: #f8fafc;
+            margin-bottom: 8px;
+        }
+        .item-categoria .info-cat {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .item-categoria .bolita {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .item-categoria .nombre-cat {
+            font-weight: bold;
+            font-size: 14px;
+            color: #1e293b;
+        }
+        .item-categoria .total-cat {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+        .item-categoria .acciones-cat {
+            display: flex;
+            gap: 6px;
+        }
+        .item-categoria .acciones-cat button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+        .item-categoria .acciones-cat button:hover {
+            background-color: #e2e8f0;
         }
     </style>
 </head>
@@ -152,6 +487,107 @@
         <a href="{% url 'referencias:lista' %}" style="display: inline-block; padding: 10px 15px; background-color: #0d9488; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; transition: background-color 0.3s;">
             📚 Consultar Referencias de Clasificación
         </a>
+    </div>
+
+    <div id="panel-recurrentes" class="panel-recurrentes">
+        <div class="panel-recurrentes-header" onclick="togglePanelRecurrentes()">
+            <h3>⭐ Mis Partidas Recurrentes</h3>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <button class="btn-gestion" onclick="event.stopPropagation(); abrirModalCategorias()" title="Gestionar categorías">⚙️ Categorías</button>
+                <span class="toggle-icon" id="toggle-icon-rec">▼</span>
+            </div>
+        </div>
+        <div class="panel-recurrentes-body" id="cuerpo-recurrentes">
+            <div class="filtros-categoria" id="filtros-categoria">
+                <span class="filtro-cat activo" data-cat="todas" onclick="filtrarPorCategoria('todas')">📋 Todas</span>
+                <span class="filtro-cat" data-cat="sin" onclick="filtrarPorCategoria('sin')">📂 Sin categoría</span>
+                {% for cat in categorias %}
+                <span class="filtro-cat" data-cat="{{ cat.id }}" style="border-color: {{ cat.color }}; color: {{ cat.color }};" onclick="filtrarPorCategoria('{{ cat.id }}')">
+                    {{ cat.nombre }}
+                </span>
+                {% endfor %}
+            </div>
+            <div id="lista-recurrentes">
+                {% if recurrentes %}
+                    {% for rec in recurrentes %}
+                    <div class="recurrente-item" data-id="{{ rec.arancel.id }}" data-categoria="{{ rec.categoria_id|default:'sin' }}">
+                        <span class="codigo-rec" onclick="rellenarBusqueda('{{ rec.arancel.codigo }}')">{{ rec.arancel.codigo }}</span>
+                        <span class="desc-rec">{{ rec.arancel.descripcion|truncatechars:70 }}</span>
+                        <select class="rec-select-cat" onchange="cambiarCategoria({{ rec.arancel.id }}, this.value)" onclick="event.stopPropagation()">
+                            <option value="" {% if not rec.categoria %}selected{% endif %}>Sin categoría</option>
+                            {% for cat in categorias %}
+                            <option value="{{ cat.id }}" {% if rec.categoria_id == cat.id %}selected{% endif %}>{{ cat.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                        <button class="quitar-rec" onclick="event.stopPropagation(); toggleRecurrente({{ rec.arancel.id }})" title="Quitar de recurrentes">✕</button>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="recurrente-vacio" id="recurrente-vacio">
+                        Aún no tienes partidas recurrentes. Busca un arancel y haz clic en ☆ para guardarlo.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-categorias">
+        <div class="modal-contenido">
+            <h3>⚙️ Gestionar Categorías</h3>
+            <p class="sub">Organiza tus partidas recurrentes por tipo de mercancía, cliente, sector, etc.</p>
+
+            <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #e2e8f0;">
+                <label style="font-size: 13px; font-weight: bold; color: #475569; display: block; margin-bottom: 8px;">Nueva categoría</label>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <input type="text" id="nueva-cat-nombre" placeholder="Ej: Ganadería, Cliente ABC..." style="flex: 1; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px;">
+                    <button class="btn-modal-primario" style="padding: 9px 16px;" onclick="crearCategoria()">Crear</button>
+                </div>
+                <div class="colores-preset" style="margin-top: 8px;">
+                    <span class="color-opcion seleccionado" data-color="#3b82f6" style="background-color: #3b82f6;" onclick="seleccionarColor(this)"></span>
+                    <span class="color-opcion" data-color="#ef4444" style="background-color: #ef4444;" onclick="seleccionarColor(this)"></span>
+                    <span class="color-opcion" data-color="#10b981" style="background-color: #10b981;" onclick="seleccionarColor(this)"></span>
+                    <span class="color-opcion" data-color="#f59e0b" style="background-color: #f59e0b;" onclick="seleccionarColor(this)"></span>
+                    <span class="color-opcion" data-color="#8b5cf6" style="background-color: #8b5cf6;" onclick="seleccionarColor(this)"></span>
+                    <span class="color-opcion" data-color="#ec4899" style="background-color: #ec4899;" onclick="seleccionarColor(this)"></span>
+                    <span class="color-opcion" data-color="#14b8a6" style="background-color: #14b8a6;" onclick="seleccionarColor(this)"></span>
+                    <span class="color-opcion" data-color="#f97316" style="background-color: #f97316;" onclick="seleccionarColor(this)"></span>
+                </div>
+            </div>
+
+            <div id="lista-categorias"></div>
+
+            <div class="modal-acciones">
+                <button class="btn-modal-secundario" onclick="cerrarModalCategorias()">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-editar-cat">
+        <div class="modal-contenido" style="width: 380px;">
+            <h3 id="editar-cat-titulo">Editar categoría</h3>
+            <div class="modal-campo">
+                <label>Nombre</label>
+                <input type="text" id="editar-cat-nombre" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; box-sizing: border-box;">
+            </div>
+            <div class="modal-campo">
+                <label>Color</label>
+                <div class="colores-preset" id="editar-cat-colores">
+                    <span class="color-opcion" data-color="#3b82f6" style="background-color: #3b82f6;" onclick="seleccionarColorEditar(this)"></span>
+                    <span class="color-opcion" data-color="#ef4444" style="background-color: #ef4444;" onclick="seleccionarColorEditar(this)"></span>
+                    <span class="color-opcion" data-color="#10b981" style="background-color: #10b981;" onclick="seleccionarColorEditar(this)"></span>
+                    <span class="color-opcion" data-color="#f59e0b" style="background-color: #f59e0b;" onclick="seleccionarColorEditar(this)"></span>
+                    <span class="color-opcion" data-color="#8b5cf6" style="background-color: #8b5cf6;" onclick="seleccionarColorEditar(this)"></span>
+                    <span class="color-opcion" data-color="#ec4899" style="background-color: #ec4899;" onclick="seleccionarColorEditar(this)"></span>
+                    <span class="color-opcion" data-color="#14b8a6" style="background-color: #14b8a6;" onclick="seleccionarColorEditar(this)"></span>
+                    <span class="color-opcion" data-color="#f97316" style="background-color: #f97316;" onclick="seleccionarColorEditar(this)"></span>
+                </div>
+            </div>
+            <div class="modal-acciones">
+                <button class="btn-modal-secundario" onclick="cerrarModalEditar()">Cancelar</button>
+                <button class="btn-modal-peligro" id="btn-eliminar-cat" onclick="eliminarCategoriaActual()">🗑️ Eliminar</button>
+                <button class="btn-modal-primario" onclick="guardarEditarCategoria()">Guardar</button>
+            </div>
+        </div>
     </div>
 
     <div class="contenedor-buscador">
@@ -239,6 +675,9 @@
                     {% else %}
                     <tr>
                         <td>
+                            <span class="star-btn" data-id="{{ item.id }}" onclick="toggleRecurrente({{ item.id }})" title="Guardar en partidas recurrentes">
+                                {% if item.id in recurrentes_ids %}⭐{% else %}☆{% endif %}
+                            </span>
                             <a href="{% url 'detalle_arancel' item.id %}" style="color: #2563eb; text-decoration: underline; font-weight: bold;">
                                 {{ item.codigo }}
                             </a>
@@ -280,22 +719,394 @@
     </table>
 
     <script>
+        var colorNueva = '#3b82f6';
+        var colorEditar = '#3b82f6';
+        var editandoCategoriaId = null;
+
         document.querySelectorAll('.box-input').forEach((input, index, inputs) => {
-            // Evento al escribir: Solo números y salto automático adelante
             input.addEventListener('input', (e) => {
-                input.value = input.value.replace(/[^0-9]/g, ''); // Forzar solo números
-                
+                input.value = input.value.replace(/[^0-9]/g, '');
                 if (input.value.length === 2 && index < inputs.length - 1) {
-                    inputs[index + 1].focus(); // Salta al siguiente cuadro
+                    inputs[index + 1].focus();
                 }
             });
-
-            // Evento de teclado: Regresar con el botón de borrar (Backspace)
             input.addEventListener('keydown', (e) => {
                 if (e.key === 'Backspace' && input.value.length === 0 && index > 0) {
-                    inputs[index - 1].focus(); // Regresa al cuadro anterior
+                    inputs[index - 1].focus();
                 }
             });
+        });
+
+        var filterActivo = 'todas';
+
+        function toggleRecurrente(arancelId) {
+            fetch('/api/recurrentes/toggle/' + arancelId + '/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                mostrarToast(data.mensaje, 'exito');
+                if (data.accion === 'agregada') {
+                    actualizarEstrella(arancelId, true);
+                    agregarRecurrentePanel(arancelId);
+                } else {
+                    actualizarEstrella(arancelId, false);
+                    quitarRecurrentePanel(arancelId);
+                }
+            })
+            .catch(error => {
+                mostrarToast('Error al guardar. Intenta de nuevo.', 'error');
+            });
+        }
+
+        function actualizarEstrella(arancelId, activo) {
+            document.querySelectorAll('.star-btn[data-id="' + arancelId + '"]').forEach(function(el) {
+                if (activo) {
+                    el.innerHTML = '⭐';
+                    el.classList.add('activo');
+                    setTimeout(function() { el.classList.remove('activo'); }, 300);
+                } else {
+                    el.innerHTML = '☆';
+                }
+            });
+        }
+
+        function agregarRecurrentePanel(arancelId) {
+            var vacio = document.getElementById('recurrente-vacio');
+            if (vacio) vacio.remove();
+
+            var lista = document.getElementById('lista-recurrentes');
+            var items = lista.querySelectorAll('.recurrente-item');
+            for (var i = 0; i < items.length; i++) {
+                if (items[i].getAttribute('data-id') == arancelId) return;
+            }
+
+            var codigoEl = document.querySelector('.star-btn[data-id="' + arancelId + '"]');
+            if (!codigoEl) return;
+            var fila = codigoEl.closest('tr');
+            if (!fila) return;
+            var codigo = fila.querySelector('a').textContent.trim();
+            var desc = fila.querySelector('.texto-izq').textContent.trim().substring(0, 70);
+
+            var div = document.createElement('div');
+            div.className = 'recurrente-item';
+            div.setAttribute('data-id', arancelId);
+            div.setAttribute('data-categoria', 'sin');
+
+            var selectHtml = '<select class="rec-select-cat" onchange="cambiarCategoria(' + arancelId + ', this.value)" onclick="event.stopPropagation()">';
+            selectHtml += '<option value="" selected>Sin categoría</option>';
+            {% for cat in categorias %}
+            selectHtml += '<option value="{{ cat.id }}">{{ cat.nombre }}</option>';
+            {% endfor %}
+            selectHtml += '</select>';
+
+            div.innerHTML =
+                '<span class="codigo-rec" onclick="rellenarBusqueda(\'' + codigo + '\')">' + codigo + '</span>' +
+                '<span class="desc-rec">' + desc + '</span>' +
+                selectHtml +
+                '<button class="quitar-rec" onclick="event.stopPropagation(); toggleRecurrente(' + arancelId + ')" title="Quitar de recurrentes">✕</button>';
+
+            lista.appendChild(div);
+            aplicarFiltro();
+        }
+
+        function quitarRecurrentePanel(arancelId) {
+            var items = document.querySelectorAll('.recurrente-item[data-id="' + arancelId + '"]');
+            items.forEach(function(el) { el.remove(); });
+            var lista = document.getElementById('lista-recurrentes');
+            if (lista.querySelectorAll('.recurrente-item').length === 0) {
+                var div = document.createElement('div');
+                div.className = 'recurrente-vacio';
+                div.id = 'recurrente-vacio';
+                div.textContent = 'Aún no tienes partidas recurrentes. Busca un arancel y haz clic en ☆ para guardarlo.';
+                lista.appendChild(div);
+            }
+        }
+
+        function rellenarBusqueda(codigo) {
+            var partes = codigo.replace(/\./g, '').padEnd(10, '');
+            var cajas = document.querySelectorAll('.box-input');
+            if (cajas.length >= 5) {
+                cajas[0].value = partes.substring(0, 2);
+                cajas[1].value = partes.substring(2, 4);
+                cajas[2].value = partes.substring(4, 6);
+                cajas[3].value = partes.substring(6, 8);
+                cajas[4].value = partes.substring(8, 10);
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function togglePanelRecurrentes() {
+            var cuerpo = document.getElementById('cuerpo-recurrentes');
+            var icono = document.getElementById('toggle-icon-rec');
+            cuerpo.classList.toggle('visible');
+            icono.classList.toggle('abierto');
+        }
+
+        function filtrarPorCategoria(catId) {
+            filterActivo = catId;
+            document.querySelectorAll('.filtro-cat').forEach(function(el) {
+                el.classList.toggle('activo', el.getAttribute('data-cat') == catId);
+            });
+            aplicarFiltro();
+        }
+
+        function aplicarFiltro() {
+            document.querySelectorAll('.recurrente-item').forEach(function(el) {
+                var cat = el.getAttribute('data-categoria');
+                if (filterActivo === 'todas') {
+                    el.style.display = '';
+                } else if (filterActivo === 'sin') {
+                    el.style.display = (cat === 'sin' || cat === '' || cat === 'None') ? '' : 'none';
+                } else {
+                    el.style.display = (cat === filterActivo) ? '' : 'none';
+                }
+            });
+            var lista = document.getElementById('lista-recurrentes');
+            var visibles = lista.querySelectorAll('.recurrente-item[style*="display: none"]');
+            var total = lista.querySelectorAll('.recurrente-item');
+            var vacioMsg = lista.querySelector('.recurrente-vacio');
+            if (total.length > 0 && total.length === visibles.length) {
+                if (!vacioMsg) {
+                    var msg = document.createElement('div');
+                    msg.className = 'recurrente-vacio';
+                    msg.textContent = 'No hay partidas en esta categoría.';
+                    lista.appendChild(msg);
+                }
+            } else {
+                var msg2 = lista.querySelector('.recurrente-vacio');
+                if (msg2) msg2.remove();
+            }
+        }
+
+        function cambiarCategoria(arancelId, categoriaId) {
+            var formData = new FormData();
+            formData.append('arancel_id', arancelId);
+            formData.append('categoria_id', categoriaId || '');
+
+            fetch('/api/recurrentes/asignar-categoria/', {
+                method: 'POST',
+                headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+                body: formData
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.ok) {
+                    var items = document.querySelectorAll('.recurrente-item[data-id="' + arancelId + '"]');
+                    items.forEach(function(el) {
+                        el.setAttribute('data-categoria', categoriaId || 'sin');
+                    });
+                    aplicarFiltro();
+                    mostrarToast('Categoría actualizada', 'exito');
+                } else {
+                    mostrarToast('Error al asignar categoría', 'error');
+                }
+            })
+            .catch(function() {
+                mostrarToast('Error de conexión', 'error');
+            });
+        }
+
+        function seleccionarColor(el) {
+            document.querySelectorAll('.colores-preset .color-opcion').forEach(function(c) { c.classList.remove('seleccionado'); });
+            el.classList.add('seleccionado');
+            colorNueva = el.getAttribute('data-color');
+        }
+
+        function seleccionarColorEditar(el) {
+            document.querySelectorAll('#editar-cat-colores .color-opcion').forEach(function(c) { c.classList.remove('seleccionado'); });
+            el.classList.add('seleccionado');
+            colorEditar = el.getAttribute('data-color');
+        }
+
+        function crearCategoria() {
+            var nombre = document.getElementById('nueva-cat-nombre').value.trim();
+            if (!nombre) { mostrarToast('Escribe un nombre para la categoría', 'error'); return; }
+            var formData = new FormData();
+            formData.append('nombre', nombre);
+            formData.append('color', colorNueva);
+            fetch('/api/recurrentes/categorias/crear/', {
+                method: 'POST',
+                headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+                body: formData
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.ok) {
+                    document.getElementById('nueva-cat-nombre').value = '';
+                    mostrarToast('Categoría creada', 'exito');
+                    recargarCategorias();
+                } else {
+                    mostrarToast(data.error || 'Error al crear', 'error');
+                }
+            })
+            .catch(function() { mostrarToast('Error de conexión', 'error'); });
+        }
+
+        function recargarCategorias() {
+            fetch('/api/recurrentes/categorias/')
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                renderizarCategorias(data.categorias);
+                actualizarSelectsCategorias(data.categorias);
+                actualizarFiltros(data.categorias);
+            });
+        }
+
+        function renderizarCategorias(categorias) {
+            var lista = document.getElementById('lista-categorias');
+            if (!categorias || categorias.length === 0) {
+                lista.innerHTML = '<div style="text-align: center; color: #94a3b8; padding: 20px;">No tienes categorías aún. Crea una arriba.</div>';
+                return;
+            }
+            var html = '';
+            categorias.forEach(function(c) {
+                html += '<div class="item-categoria">' +
+                    '<div class="info-cat">' +
+                        '<span class="bolita" style="background-color: ' + c.color + ';"></span>' +
+                        '<span class="nombre-cat">' + escaparHtml(c.nombre) + '</span>' +
+                        '<span class="total-cat">(' + c.total_partidas + ' partidas)</span>' +
+                    '</div>' +
+                    '<div class="acciones-cat">' +
+                        '<button onclick="abrirEditarCategoria(' + c.id + ', \'' + escaparHtml(c.nombre) + '\', \'' + c.color + '\')" title="Editar">✏️</button>' +
+                    '</div>' +
+                '</div>';
+            });
+            lista.innerHTML = html;
+        }
+
+        function actualizarSelectsCategorias(categorias) {
+            document.querySelectorAll('.rec-select-cat').forEach(function(sel) {
+                var valorActual = sel.value;
+                sel.innerHTML = '<option value="">Sin categoría</option>';
+                categorias.forEach(function(c) {
+                    var opt = document.createElement('option');
+                    opt.value = c.id;
+                    opt.textContent = c.nombre;
+                    sel.appendChild(opt);
+                });
+                sel.value = valorActual;
+            });
+        }
+
+        function actualizarFiltros(categorias) {
+            var cont = document.getElementById('filtros-categoria');
+            cont.innerHTML =
+                '<span class="filtro-cat activo" data-cat="todas" onclick="filtrarPorCategoria(\'todas\')">📋 Todas</span>' +
+                '<span class="filtro-cat" data-cat="sin" onclick="filtrarPorCategoria(\'sin\')">📂 Sin categoría</span>';
+            categorias.forEach(function(c) {
+                cont.innerHTML += '<span class="filtro-cat" data-cat="' + c.id + '" style="border-color: ' + c.color + '; color: ' + c.color + ';" onclick="filtrarPorCategoria(\'' + c.id + '\')">' + escaparHtml(c.nombre) + '</span>';
+            });
+            var filtros = cont.querySelectorAll('.filtro-cat');
+            filtros.forEach(function(f) {
+                if (f.getAttribute('data-cat') == filterActivo) f.classList.add('activo');
+            });
+        }
+
+        function abrirModalCategorias() {
+            document.getElementById('modal-categorias').classList.add('visible');
+            recargarCategorias();
+        }
+
+        function cerrarModalCategorias() {
+            document.getElementById('modal-categorias').classList.remove('visible');
+        }
+
+        function abrirEditarCategoria(id, nombre, color) {
+            editandoCategoriaId = id;
+            document.getElementById('editar-cat-nombre').value = nombre;
+            colorEditar = color;
+            document.querySelectorAll('#editar-cat-colores .color-opcion').forEach(function(c) {
+                c.classList.toggle('seleccionado', c.getAttribute('data-color') === color);
+            });
+            document.getElementById('btn-eliminar-cat').style.display = '';
+            document.getElementById('modal-editar-cat').classList.add('visible');
+        }
+
+        function cerrarModalEditar() {
+            document.getElementById('modal-editar-cat').classList.remove('visible');
+            editandoCategoriaId = null;
+        }
+
+        function guardarEditarCategoria() {
+            if (!editandoCategoriaId) return;
+            var nombre = document.getElementById('editar-cat-nombre').value.trim();
+            if (!nombre) { mostrarToast('El nombre es obligatorio', 'error'); return; }
+            var formData = new FormData();
+            formData.append('nombre', nombre);
+            formData.append('color', colorEditar);
+            fetch('/api/recurrentes/categorias/' + editandoCategoriaId + '/editar/', {
+                method: 'POST',
+                headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+                body: formData
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.ok) {
+                    mostrarToast('Categoría actualizada', 'exito');
+                    cerrarModalEditar();
+                    recargarCategorias();
+                } else {
+                    mostrarToast(data.error || 'Error al editar', 'error');
+                }
+            });
+        }
+
+        function eliminarCategoriaActual() {
+            if (!editandoCategoriaId) return;
+            if (!confirm('¿Eliminar esta categoría? Las partidas asignadas quedarán sin categoría pero no se perderán.')) return;
+            var formData = new FormData();
+            fetch('/api/recurrentes/categorias/' + editandoCategoriaId + '/eliminar/', {
+                method: 'POST',
+                headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+                body: formData
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.ok) {
+                    mostrarToast('Categoría eliminada', 'exito');
+                    cerrarModalEditar();
+                    recargarCategorias();
+                    document.querySelectorAll('.recurrente-item[data-categoria="' + editandoCategoriaId + '"]').forEach(function(el) {
+                        el.setAttribute('data-categoria', 'sin');
+                    });
+                    aplicarFiltro();
+                }
+            });
+        }
+
+        function escaparHtml(str) {
+            return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+        }
+
+        function mostrarToast(mensaje, tipo) {
+            var existente = document.querySelector('.toast');
+            if (existente) existente.remove();
+            var toast = document.createElement('div');
+            toast.className = 'toast ' + tipo;
+            toast.textContent = mensaje;
+            document.body.appendChild(toast);
+            setTimeout(function() { toast.classList.add('visible'); }, 10);
+            setTimeout(function() {
+                toast.classList.remove('visible');
+                setTimeout(function() { toast.remove(); }, 400);
+            }, 3000);
+        }
+
+        if ({{ recurrentes|length }} > 0) {
+            document.getElementById('cuerpo-recurrentes').classList.add('visible');
+            document.getElementById('toggle-icon-rec').classList.add('abierto');
+        }
+
+        document.getElementById('modal-categorias').addEventListener('click', function(e) {
+            if (e.target === this) cerrarModalCategorias();
+        });
+        document.getElementById('modal-editar-cat').addEventListener('click', function(e) {
+            if (e.target === this) cerrarModalEditar();
         });
     </script>
 

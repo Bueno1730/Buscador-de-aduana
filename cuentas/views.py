@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.views.decorators.cache import never_cache
 from django.contrib.auth.models import User
-from .models import Arancel, HistorialBusqueda
+from .models import Arancel, HistorialBusqueda, PartidaRecurrente, CategoriaRecurrente
 from .forms import ArancelForm
 from django.db.models import Q
 from .admin import ArancelResource
@@ -96,6 +96,18 @@ def vista_busqueda(request):
             codigo_buscado=termino_historial
         )
 
+    recurrentes_ids = list(PartidaRecurrente.objects.filter(
+        usuario=request.user
+    ).values_list('arancel_id', flat=True))
+
+    recurrentes = PartidaRecurrente.objects.filter(
+        usuario=request.user
+    ).select_related('arancel', 'categoria')
+
+    categorias = CategoriaRecurrente.objects.filter(
+        usuario=request.user
+    )
+
     return render(request, 'busqueda.html', {
         'resultados': resultados,
         'box1': box1,
@@ -105,7 +117,10 @@ def vista_busqueda(request):
         'box5': box5,
         'texto_buscar': texto_buscar,
         'capitulo_seleccionado': capitulo_seleccionado,
-        'capitulos_disponibles': capitulos_disponibles
+        'capitulos_disponibles': capitulos_disponibles,
+        'recurrentes_ids': recurrentes_ids,
+        'recurrentes': recurrentes,
+        'categorias': categorias,
     })
     
     
@@ -319,3 +334,124 @@ def chat_inteligente(request):
         return JsonResponse({'respuesta': texto_respuesta})
 
     return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+
+@login_required
+def gestionar_categorias(request):
+    categorias = CategoriaRecurrente.objects.filter(usuario=request.user)
+    data = [{
+        'id': c.id,
+        'nombre': c.nombre,
+        'color': c.color,
+        'orden': c.orden,
+        'total_partidas': PartidaRecurrente.objects.filter(usuario=request.user, categoria=c).count(),
+    } for c in categorias]
+    return JsonResponse({'categorias': data})
+
+
+@login_required
+def crear_categoria(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Método no permitido'}, status=405)
+    nombre = request.POST.get('nombre', '').strip()
+    color = request.POST.get('color', '#3b82f6').strip()
+    if not nombre:
+        return JsonResponse({'error': 'El nombre es obligatorio'}, status=400)
+    if CategoriaRecurrente.objects.filter(usuario=request.user, nombre=nombre).exists():
+        return JsonResponse({'error': 'Ya existe una categoría con ese nombre'}, status=400)
+    categoria = CategoriaRecurrente.objects.create(
+        usuario=request.user, nombre=nombre, color=color
+    )
+    return JsonResponse({
+        'ok': True,
+        'categoria': {'id': categoria.id, 'nombre': categoria.nombre, 'color': categoria.color}
+    })
+
+
+@login_required
+def editar_categoria(request, categoria_id):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Método no permitido'}, status=405)
+    categoria = get_object_or_404(CategoriaRecurrente, id=categoria_id, usuario=request.user)
+    nombre = request.POST.get('nombre', '').strip()
+    color = request.POST.get('color', '').strip()
+    if nombre:
+        conflicto = CategoriaRecurrente.objects.filter(usuario=request.user, nombre=nombre).exclude(id=categoria.id)
+        if conflicto.exists():
+            return JsonResponse({'error': 'Ya existe otra categoría con ese nombre'}, status=400)
+        categoria.nombre = nombre
+    if color:
+        categoria.color = color
+    categoria.save()
+    return JsonResponse({'ok': True, 'categoria': {'id': categoria.id, 'nombre': categoria.nombre, 'color': categoria.color}})
+
+
+@login_required
+def eliminar_categoria(request, categoria_id):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Método no permitido'}, status=405)
+    categoria = get_object_or_404(CategoriaRecurrente, id=categoria_id, usuario=request.user)
+    PartidaRecurrente.objects.filter(usuario=request.user, categoria=categoria).update(categoria=None)
+    categoria.delete()
+    return JsonResponse({'ok': True, 'mensaje': 'Categoría eliminada. Las partidas quedaron sin categoría.'})
+
+
+@login_required
+def asignar_categoria(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Método no permitido'}, status=405)
+    arancel_id = request.POST.get('arancel_id')
+    categoria_id = request.POST.get('categoria_id')
+    if not arancel_id:
+        return JsonResponse({'error': 'Falta el arancel_id'}, status=400)
+    recurrente = get_object_or_404(PartidaRecurrente, usuario=request.user, arancel_id=arancel_id)
+    if categoria_id and categoria_id != 'null' and categoria_id != '':
+        categoria = get_object_or_404(CategoriaRecurrente, id=categoria_id, usuario=request.user)
+        recurrente.categoria = categoria
+    else:
+        recurrente.categoria = None
+    recurrente.save()
+    return JsonResponse({'ok': True, 'mensaje': 'Categoría actualizada'})
+
+
+@login_required
+def toggle_recurrente(request, arancel_id):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+    arancel = get_object_or_404(Arancel, id=arancel_id)
+    recurrente, created = PartidaRecurrente.objects.get_or_create(
+        usuario=request.user,
+        arancel=arancel
+    )
+
+    if created:
+        return JsonResponse({
+            'accion': 'agregada',
+            'mensaje': 'Partida guardada en recurrentes'
+        })
+    else:
+        recurrente.delete()
+        return JsonResponse({
+            'accion': 'eliminada',
+            'mensaje': 'Partida eliminada de recurrentes'
+        })
+
+
+@login_required
+def mis_recurrentes(request):
+    recurrentes = PartidaRecurrente.objects.filter(
+        usuario=request.user
+    ).select_related('arancel', 'categoria')
+
+    data = [{
+        'id': r.arancel.id,
+        'codigo': r.arancel.codigo,
+        'descripcion': r.arancel.descripcion[:100],
+        'observacion': r.observacion or '',
+        'categoria_id': r.categoria_id or None,
+        'categoria_nombre': r.categoria.nombre if r.categoria else None,
+        'categoria_color': r.categoria.color if r.categoria else None,
+    } for r in recurrentes]
+
+    return JsonResponse({'recurrentes': data})
