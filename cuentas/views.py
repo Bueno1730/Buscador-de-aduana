@@ -14,7 +14,8 @@ from .models import Arancel, HistorialBusqueda
 from .forms import ArancelForm
 from django.db.models import Q
 from .admin import ArancelResource
-
+from .forms import UsuarioPersonalForm
+from django.urls import reverse
 # ==========================================
 # CONFIGURACIÓN DE LA IA (A prueba de fallos)
 # ==========================================
@@ -210,22 +211,27 @@ def pantalla_chat(request):
 
 
 # ==========================================
-# NUEVA VISTA: CHAT INTELIGENTE (VERSIÓN FINAL COMPLETA)
+# NUEVA VISTA: CHAT INTELIGENTE (VERSIÓN DEFINITIVA CON MEMORIA)
 # ==========================================
 @login_required
 def chat_inteligente(request):
     if request.method == 'POST':
         
-        # 1. Validación de existencia del modelo
+        # --- VALIDACIÓN DE DEGRADACIÓN ELEGANTE ---
         if not modelo_ia:
-            return JsonResponse({'respuesta': "⚠️ Error: El motor de IA no está configurado (falta API Key)."})
+            return JsonResponse({'respuesta': "⚠️ **Aviso:** El motor de IA no está configurado (falta API Key)."})
 
+        # 1. RECIBIR DATOS Y MEMORIA DEL FRONTEND
         pregunta_usuario = request.POST.get('pregunta', '').strip()
+        memoria_chat = request.POST.get('memoria_chat', '').strip()
+        ultima_pregunta = request.POST.get('ultima_pregunta', '').strip()
+
         if not pregunta_usuario:
             return JsonResponse({'respuesta': 'Por favor, escribe una pregunta.'})
 
-        # 1. LIMPIEZA DE LA PREGUNTA
-        pregunta_limpia = re.sub(r'[^\w\s]', '', pregunta_usuario.lower())
+        # 2. LIMPIEZA DE LA PREGUNTA (Combinando historial para buscar en la BD)
+        texto_busqueda = f"{ultima_pregunta} {pregunta_usuario}".lower()
+        pregunta_limpia = re.sub(r'[^\w\s]', '', texto_busqueda)
         
         palabras_basura = [
             'qué', 'que', 'cuál', 'cual', 'cómo', 'como', 'cuánto', 'cuanto', 'cuales',
@@ -239,7 +245,7 @@ def chat_inteligente(request):
         
         palabras_clave = [p for p in pregunta_limpia.split() if p not in palabras_basura and len(p) > 2]
 
-        # 2. BÚSQUEDA LOCAL JERÁRQUICA (PADRES E HIJOS)
+        # 3. BÚSQUEDA LOCAL JERÁRQUICA (PADRES E HIJOS)
         resultados_db = Arancel.objects.none()
         
         if palabras_clave:
@@ -269,53 +275,115 @@ def chat_inteligente(request):
             else:
                 resultados_db = matches_iniciales[:5]
 
-        # 3. ARMAR EL CONTEXTO ESTRICTO (CON TODOS LOS DATOS)
+        # 4. ARMAR EL CONTEXTO ESTRICTO (AQUÍ SE CREA LA VARIABLE QUE FALTABA)
         if resultados_db.exists():
             contexto_arancelario = "Datos encontrados en la base de datos oficial:\n"
             for item in resultados_db:
                 ga_texto = item.ga_porcentaje if item.ga_porcentaje else "-"
                 ice_texto = item.ice_iehd if item.ice_iehd else "-"
-                u_medida = item.unidad_medida if item.unidad_medida else "No especificada"
                 doc_texto = item.doc_tipo if item.doc_tipo else "Ninguno"
-                entidad_texto = item.doc_entidad if item.doc_entidad else "-"
-                disp_texto = item.doc_disposicion if item.doc_disposicion else "-"
+                
+                url_detalle = reverse('detalle_arancel', args=[item.id])
                 
                 contexto_arancelario += (
-                    f"- Partida: {item.codigo} | "
+                    f"- Partida: {item.codigo} (URL_BOTON: {url_detalle}) | "
                     f"Desc: {item.descripcion} | "
                     f"GA: {ga_texto}% | "
                     f"ICE: {ice_texto} | "
-                    f"Unidad de Medida: {u_medida} | "
-                    f"Doc: {doc_texto} (Entidad: {entidad_texto}, Ley: {disp_texto})\n"
+                    f"Doc: {doc_texto}\n"
                 )
         else:
             contexto_arancelario = "No se encontraron datos en la base."
 
-        # 4. EL PROMPT MAESTRO
+        # 5. EL PROMPT MAESTRO (CON MEMORIA INCLUIDA)
         prompt_maestro = f"""
-        Eres un asistente experto en aduanas exclusivo para el sistema SISARM.
+        Eres Sisa, un asistente experto en aduanas exclusivo para el sistema SISARM.
         
-        REGLAS ESTRICTAS:
-        1. Responde ÚNICAMENTE basándote en la sección 'Datos encontrados'.
-        2. La nomenclatura es jerárquica: las partidas generales (ej. 01.01) tienen subpartidas específicas. Desglosa las opciones si la pregunta es general.
-        3. Si un dato marca '-', significa que la base de datos no tiene ese valor asignado.
-        4. Sé claro, directo y usa viñetas para que sea fácil de leer.
+        REGLAS ESTRICTAS DE FORMATO Y COMPORTAMIENTO (CRÍTICO):
+        1. Presenta la información siempre en listas o viñetas cortas. NUNCA uses párrafos largos.
+        2. Resalta SIEMPRE en **negrita** los valores clave, por ejemplo: **GA: 10%** o **ICE: 5%**.
+        3. Cuando menciones una partida arancelaria específica, DEBES colocar un enlace en formato Markdown al final de la explicación usando la 'URL_BOTON' proporcionada en el contexto. 
+           Formato exacto obligatorio: [🔍 Ver Detalle Completo](/la/url/proporcionada/)
+        4. No inventes URLs, usa únicamente la que se te entrega en los datos.
+        5. REGLA DE AMBIGÜEDAD: Si la pregunta del usuario es general o hay múltiples variantes, NO des una lista larga. Haz una pregunta amigable para acotar la búsqueda sugiriendo opciones.
         
+        HISTORIAL DE LA CONVERSACIÓN RECIENTE:
+        {memoria_chat if memoria_chat else "Esta es la primera interacción del usuario, no hay historial previo."}
+        
+        DATOS ENCONTRADOS EN LA BASE DE DATOS OFICIAL:
         {contexto_arancelario}
         
-        Pregunta del usuario: {pregunta_usuario}
+        Pregunta actual del usuario: {pregunta_usuario}
         """
 
+        # 6. LLAMAR A LA IA
         try:
-            print("🚀 Enviando prompt a Gemini...") # Para ver en la terminal
+            print("🚀 Enviando prompt a Gemini con memoria...") 
             respuesta_ia = modelo_ia.generate_content(prompt_maestro)
             texto_respuesta = respuesta_ia.text
         except Exception as e:
-            # ESTA ES LA MODIFICACIÓN: Ahora verás el error real en el chat
             error_msg = f"❌ Error técnico de IA: {str(e)}"
-            print(error_msg) # También lo verás en la consola
+            print(error_msg)
             return JsonResponse({'respuesta': error_msg})
 
         return JsonResponse({'respuesta': texto_respuesta})
 
     return JsonResponse({'error': 'Método no permitido'}, status=405)
+# ==========================================
+# GESTIÓN DE PERSONAL (CRUD)
+# ==========================================
+
+
+@staff_member_required
+@never_cache
+def lista_usuarios(request):
+    usuarios = User.objects.all().order_by('-date_joined')
+    return render(request, 'usuarios/lista.html', {'usuarios': usuarios})
+
+@staff_member_required
+@never_cache
+def crear_usuario(request):
+    if request.method == 'POST':
+        form = UsuarioPersonalForm(request.POST)
+        if form.is_valid():
+            # Validar que al crear un usuario nuevo, la contraseña no esté vacía
+            if not form.cleaned_data.get('password'):
+                form.add_error('password', 'La contraseña es obligatoria para un usuario nuevo.')
+            else:
+                form.save()
+                messages.success(request, "Cuenta de personal creada y habilitada exitosamente.")
+                return redirect('lista_usuarios')
+    else:
+        form = UsuarioPersonalForm()
+    
+    return render(request, 'usuarios/form.html', {'form': form, 'titulo': 'Registrar Nuevo Personal'})
+
+@staff_member_required
+@never_cache
+def editar_usuario(request, user_id):
+    usuario = get_object_or_404(User, id=user_id)
+    if request.method == 'POST':
+        form = UsuarioPersonalForm(request.POST, instance=usuario)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Datos del personal actualizados.")
+            return redirect('lista_usuarios')
+    else:
+        # Pre-seleccionar el rol actual del usuario en el desplegable
+        rol_actual = 'administrador' if usuario.is_staff else 'despachante'
+        form = UsuarioPersonalForm(instance=usuario, initial={'rol': rol_actual})
+        
+    return render(request, 'usuarios/form.html', {'form': form, 'titulo': 'Editar Personal'})
+
+@staff_member_required
+def eliminar_usuario(request, user_id):
+    usuario = get_object_or_404(User, id=user_id)
+    if request.method == 'POST':
+        if usuario == request.user:
+            messages.error(request, "Por seguridad, no puedes eliminar tu propia cuenta de administrador.")
+        else:
+            usuario.delete()
+            messages.success(request, "Cuenta eliminada del sistema.")
+        return redirect('lista_usuarios')
+    
+    return render(request, 'usuarios/confirmar_eliminar.html', {'usuario': usuario})

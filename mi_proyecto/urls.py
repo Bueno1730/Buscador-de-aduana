@@ -45,7 +45,11 @@ urlpatterns = [
     path('carga-masiva/', views.carga_masiva, name='carga_masiva'),
     path('chat-ia/', views.chat_inteligente, name='chat_ia'),
     path('asistente/', views.pantalla_chat, name='pantalla_chat'), 
-    path('api/chat/', views.chat_inteligente, name='chat_ia')
+    path('api/chat/', views.chat_inteligente, name='chat_ia'),
+    path('personal/', views.lista_usuarios, name='lista_usuarios'),
+    path('personal/crear/', views.crear_usuario, name='crear_usuario'),
+    path('personal/editar/<int:user_id>/', views.editar_usuario, name='editar_usuario'),
+    path('personal/eliminar/<int:user_id>/', views.eliminar_usuario, name='eliminar_usuario'),
 ]
 
 if settings.DEBUG:

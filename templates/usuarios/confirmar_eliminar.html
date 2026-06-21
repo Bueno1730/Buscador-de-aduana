@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 500px; margin: 60px auto; padding: 30px; background-color: white; border-radius: 8px; box-shadow: 0 10px 15px rgba(0,0,0,0.1); border-top: 5px solid #ef4444; font-family: system-ui, -apple-system, sans-serif; text-align: center;">
+    
+    <div style="font-size: 48px; margin-bottom: 10px;">⚠️</div>
+
+    <h2 style="font-size: 24px; font-weight: bold; color: #1f2937; margin-bottom: 15px;">
+        Confirmar Eliminación
+    </h2>
+
+    <p style="color: #4b5563; font-size: 16px; margin-bottom: 10px;">
+        ¿Estás completamente seguro de que deseas eliminar la cuenta del sistema perteneciente a:
+    </p>
+    
+    <p style="font-size: 18px; font-weight: bold; color: #111827; background-color: #f3f4f6; padding: 10px; border-radius: 6px; margin-bottom: 20px;">
+        {{ usuario.username }} {% if usuario.first_name %} ({{ usuario.first_name }} {{ usuario.last_name }}) {% endif %}
+    </p>
+
+    <p style="color: #dc2626; font-size: 14px; font-weight: bold; margin-bottom: 25px;">
+        Esta acción es irreversible y el usuario perderá acceso inmediato a SISARM.
+    </p>
+
+    <form method="POST" style="display: flex; justify-content: center; gap: 15px;">
+        {% csrf_token %}
+        
+        <a href="{% url 'lista_usuarios' %}" style="background-color: #f3f4f6; color: #4b5563; font-weight: bold; padding: 10px 20px; border-radius: 6px; text-decoration: none; border: 1px solid #d1d5db; transition: background-color 0.2s;">
+            Cancelar
+        </a>
+        
+        <button type="submit" style="background-color: #ef4444; color: white; font-weight: bold; padding: 10px 20px; border-radius: 6px; border: none; cursor: pointer; transition: background-color 0.2s;">
+            Sí, eliminar cuenta
+        </button>
+    </form>
+</div>
+{% endblock %}
