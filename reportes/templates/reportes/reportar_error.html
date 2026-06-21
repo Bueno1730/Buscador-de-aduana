@@ -1,145 +1,315 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reportar un Error - Aduana</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Oculta la lista de errores en inglés que Django genera automáticamente */
+        ul.errorlist { display: none !important; }
 
-{% block content %}
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <h2 class="mb-4">Reportar un Error</h2>
+        /* Estilizando los inputs de Django para que coincidan con Tailwind sin tocar el backend */
+        #formReporte input[type="text"],
+        #formReporte input[type="email"],
+        #formReporte textarea,
+        #formReporte select {
+            width: 100%;
+            border: 1px solid #d1d5db; /* gray-300 */
+            border-radius: 0.25rem; /* rounded */
+            padding: 0.5rem; /* p-2 */
+            color: #374151; /* gray-700 */
+            outline: none;
+            transition: all 0.2s;
+        }
+        #formReporte input:focus,
+        #formReporte textarea:focus,
+        #formReporte select:focus {
+            border-color: #3b82f6; /* blue-500 */
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5); /* ring-blue-500 */
+        }
+        /* Clase inyectada por JS cuando el usuario deja un campo vacío */
+        .input-error {
+            border-color: #ef4444 !important;
+            box-shadow: 0 0 0 1px #ef4444 !important;
+            background-color: #fef2f2 !important;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen py-10">
+    <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-2xl mx-4">
+        
+        <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Reportar un Error</h2>
 
-            {% if form.errors %}
-                <div class="alert alert-danger">Corrige los errores marcados en el formulario.</div>
-            {% endif %}
+        <form id="formReporte" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
 
-            <form method="post" enctype="multipart/form-data" novalidate>
-                {% csrf_token %}
+            <div class="mb-4">
+                <label class="block font-bold text-gray-700 mb-2">Título *</label>
+                {{ form.titulo }}
+            </div>
 
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Título *</label>
-                    {{ form.titulo }}
-                    {% if form.titulo.errors %}
-                        <div class="invalid-feedback d-block">{{ form.titulo.errors.0 }}</div>
-                    {% endif %}
+            <div class="mb-4">
+                <label class="block font-bold text-gray-700 mb-2">Categoría *</label>
+                {{ form.categoria }}
+            </div>
+
+            <div class="mb-4">
+                <label class="block font-bold text-gray-700 mb-2">Descripción del problema *</label>
+                {{ form.descripcion }}
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="block font-bold text-gray-700 mb-2">Partida arancelaria afectada</label>
+                    {{ form.partida_arancelaria_afectada }}
                 </div>
-
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Categoría *</label>
-                    {{ form.categoria }}
-                    {% if form.categoria.errors %}
-                        <div class="invalid-feedback d-block">{{ form.categoria.errors.0 }}</div>
-                    {% endif %}
+                <div>
+                    <label class="block font-bold text-gray-700 mb-2">Código de producto afectado</label>
+                    {{ form.codigo_producto_afectado }}
                 </div>
+            </div>
 
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Descripción del problema *</label>
-                    {{ form.descripcion }}
-                    {% if form.descripcion.errors %}
-                        <div class="invalid-feedback d-block">{{ form.descripcion.errors.0 }}</div>
-                    {% endif %}
-                </div>
+            <div class="mb-6">
+                <label class="block font-bold text-gray-700 mb-2">Captura de pantalla (Opcional)</label>
 
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-bold">Partida arancelaria afectada</label>
-                        {{ form.partida_arancelaria_afectada }}
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-bold">Código de producto afectado</label>
-                        {{ form.codigo_producto_afectado }}
-                    </div>
-                </div>
-
-                <div class="mb-4">
-                    <label class="form-label fw-bold">Captura de pantalla (Opcional)</label>
-
-                    <div class="input-group">
-                        <label for="id_captura_pantalla" class="input-group-text" style="cursor: pointer; background-color: #e9ecef; border: 1px solid #ced4da;">
-                            Seleccionar archivo
-                        </label>
-                        <div class="form-control text-muted" id="file-name" style="background-color: #fff; border: 1px solid #ced4da; overflow: hidden; white-space: nowrap;">
-                            Ningún archivo seleccionado
-                        </div>
-                    </div>
-
-                    <div style="height: 0; width: 0; overflow: hidden;">
-                        {{ form.captura_pantalla }}
-                    </div>
-
-                    <div id="file-error" class="d-none mt-2 alert alert-danger p-2" style="font-size: 0.875rem;"></div>
-
-                    {% if form.captura_pantalla.errors %}
-                        <div class="text-danger mt-1" style="font-size: 0.875rem;">{{ form.captura_pantalla.errors.0 }}</div>
-                    {% endif %}
-                </div>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-bold">Tu nombre *</label>
-                        {{ form.nombre_reportante }}
-                        {% if form.nombre_reportante.errors %}
-                            <div class="invalid-feedback d-block">{{ form.nombre_reportante.errors.0 }}</div>
-                        {% endif %}
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-bold">Tu email *</label>
-                        {{ form.email_reportante }}
-                        {% if form.email_reportante.errors %}
-                            <div class="invalid-feedback d-block">{{ form.email_reportante.errors.0 }}</div>
-                        {% endif %}
+                <div class="flex items-center w-full border border-gray-300 rounded overflow-hidden">
+                    <label for="id_captura_pantalla" class="bg-gray-100 px-4 py-2 cursor-pointer border-r border-gray-300 text-gray-700 font-medium hover:bg-gray-200 transition">
+                        Seleccionar archivo
+                    </label>
+                    <div class="px-4 py-2 text-gray-500 bg-white flex-1 whitespace-nowrap overflow-hidden text-ellipsis" id="file-name">
+                        {% if form.instance.captura_pantalla %}Imagen actual: {{ form.instance.captura_pantalla.name }}{% else %}Ningún archivo seleccionado{% endif %}
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-danger">Enviar Reporte</button>
-            </form>
+                <div class="h-0 w-0 overflow-hidden">
+                    {{ form.captura_pantalla }}
+                </div>
+
+                <div id="file-error" class="hidden mt-2 p-3 bg-red-100 border border-red-400 text-red-700 text-sm rounded"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div>
+                    <label class="block font-bold text-gray-700 mb-2">Tu nombre *</label>
+                    {{ form.nombre_reportante }}
+                </div>
+                <div>
+                    <label class="block font-bold text-gray-700 mb-2">Tu email *</label>
+                    {{ form.email_reportante }}
+                </div>
+            </div>
+
+            <button type="button" class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 transition duration-200" onclick="validarYConfirmar()">
+                Enviar Reporte
+            </button>
+
+            <div class="mt-4 text-center">
+                <a href="javascript:history.back()" class="text-sm text-blue-600 hover:text-blue-800 hover:underline">
+                    &larr; Volver atrás
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <div id="modalConfirmacion" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden items-center justify-center z-50 transition-opacity">
+        <div class="bg-white rounded-lg shadow-lg max-w-sm w-full mx-4 overflow-hidden">
+            <div class="border-b px-4 py-3 flex justify-between items-center">
+                <h5 class="font-bold text-gray-800 text-lg">Confirmar envío</h5>
+                <button type="button" class="text-gray-400 hover:text-gray-600 focus:outline-none" onclick="cerrarModal()">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div class="px-4 py-5 text-gray-700">
+                ¿Está seguro de que desea enviar este reporte?
+            </div>
+            <div class="border-t px-4 py-3 flex justify-end space-x-3 bg-gray-50">
+                <button type="button" class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 font-medium transition" onclick="cerrarModal()">Cancelar</button>
+                <button type="button" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-medium transition" onclick="procesarEnvio()">Confirmar</button>
+            </div>
         </div>
     </div>
-</div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const fileInput = document.getElementById('id_captura_pantalla');
-        const fileNameDisplay = document.getElementById('file-name');
-        const fileError = document.getElementById('file-error');
+    <script>
+        const modal = document.getElementById('modalConfirmacion');
 
-        if (fileInput) {
-            fileInput.addEventListener('change', function(event) {
-                // 1. Limpiar estados previos y ocultar alerta
-                fileError.classList.add('d-none');
-                fileError.textContent = '';
-                fileNameDisplay.classList.remove('text-danger');
-                fileNameDisplay.classList.add('text-muted');
-
-                if (this.files && this.files.length > 0) {
-                    const file = this.files[0];
-                    
-                    // Mostrar el nombre del archivo seleccionado
-                    fileNameDisplay.textContent = file.name;
-                    fileNameDisplay.classList.remove('text-muted'); 
-
-                    // 2. Validar Peso (5MB)
-                    const maxSize = 5 * 1024 * 1024; 
-                    if (file.size > maxSize) {
-                        fileError.textContent = "El archivo es demasiado pesado. El límite máximo es de 5 MB.";
-                        fileError.classList.remove('d-none');
-                        fileNameDisplay.classList.add('text-danger');
-                        this.value = ''; // Borra el archivo para que no se envíe
-                        return;
-                    }
-
-                    // 3. Validar Formato de Seguridad
-                    const allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
-                    if (!allowedExtensions.test(file.name)) {
-                        fileError.textContent = "Formato no válido. Solo se permiten imágenes (JPG, JPEG, PNG).";
-                        fileError.classList.remove('d-none');
-                        fileNameDisplay.classList.add('text-danger');
-                        this.value = ''; 
-                        return;
-                    }
-
-                } else {
-                    fileNameDisplay.textContent = "Ningún archivo seleccionado";
-                    fileNameDisplay.classList.add('text-muted');
-                }
-            });
+        function validarYConfirmar() {
+            const form = document.getElementById('formReporte');
+            
+            // Verificamos si todos los campos obligatorios están llenos
+            if (form.checkValidity()) {
+                // Quitamos hidden y agregamos flex para mostrar el modal de Tailwind
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            } else {
+                // Disparamos evento para que aparezcan mensajes en español
+                form.querySelectorAll(':invalid').forEach(input => {
+                    input.dispatchEvent(new Event('invalid', { cancelable: true }));
+                });
+            }
         }
-    });
-</script>
-{% endblock %}
+
+        function cerrarModal() {
+            // Ocultamos el modal
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function procesarEnvio() {
+            // Enviar definitivamente el formulario al backend
+            document.getElementById('formReporte').submit();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('formReporte');
+            const inputs = form.querySelectorAll('input, textarea, select');
+
+            // --- 1. INTERCEPTOR DE MENSAJES EN ESPAÑOL Y DISEÑO ROJO ---
+            inputs.forEach(input => {
+                input.addEventListener('invalid', function(e) {
+                    e.preventDefault();
+                    input.classList.add('input-error');
+                    const existingErr = input.parentNode.querySelector('.js-custom-error');
+                    if (existingErr) existingErr.remove();
+
+                    const err = document.createElement('div');
+                    err.className = 'text-red-600 text-sm mt-1 font-bold js-custom-error';
+
+                    if (input.validity.valueMissing) {
+                        err.textContent = 'Este campo es obligatorio.';
+                    } else if (input.validity.typeMismatch && input.type === 'email') {
+                        err.textContent = 'Por favor, introduce un correo electrónico válido.';
+                    } else {
+                        err.textContent = 'Por favor, revisa la información de este campo.';
+                    }
+
+                    input.parentNode.appendChild(err);
+                });
+
+                input.addEventListener('input', function() {
+                    input.classList.remove('input-error');
+                    const existingErr = input.parentNode.querySelector('.js-custom-error');
+                    if (existingErr) existingErr.remove();
+                });
+            });
+
+            // --- 2. NOMBRE: solo letras y espacios, bloquear números ---
+            const campoNombre = document.getElementById('id_nombre_reportante');
+            if (campoNombre) {
+                campoNombre.addEventListener('keypress', function(e) {
+                    const char = String.fromCharCode(e.which);
+                    if (/[0-9]/.test(char)) {
+                        e.preventDefault();
+                    }
+                });
+                campoNombre.addEventListener('input', function() {
+                    this.value = this.value.replace(/[0-9]/g, '');
+                });
+            }
+
+            // --- 3. EMAIL: bloquear espacios y validar formato ---
+            const campoEmail = document.getElementById('id_email_reportante');
+            if (campoEmail) {
+                campoEmail.addEventListener('keypress', function(e) {
+                    if (e.key === ' ') {
+                        e.preventDefault();
+                    }
+                });
+                campoEmail.addEventListener('input', function() {
+                    this.value = this.value.replace(/\s/g, '');
+                });
+                campoEmail.addEventListener('blur', function() {
+                    const existingErr = this.parentNode.querySelector('.js-custom-error');
+                    if (existingErr) existingErr.remove();
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (this.value && !emailRegex.test(this.value)) {
+                        this.classList.add('input-error');
+                        const err = document.createElement('div');
+                        err.className = 'text-red-600 text-sm mt-1 font-bold js-custom-error';
+                        err.textContent = 'Por favor, introduce un correo electrónico válido.';
+                        this.parentNode.appendChild(err);
+                    }
+                });
+            }
+
+            // --- 4. PARTIDA ARANCELARIA: solo números y puntos, sin espacios ---
+            const campoPartida = document.getElementById('id_partida_arancelaria_afectada');
+            if (campoPartida) {
+                campoPartida.addEventListener('keypress', function(e) {
+                    const char = String.fromCharCode(e.which);
+                    if (!/[0-9.]/.test(char)) {
+                        e.preventDefault();
+                    }
+                });
+                campoPartida.addEventListener('input', function() {
+                    this.value = this.value.replace(/[^0-9.]/g, '');
+                });
+            }
+
+            // --- 5. CÓDIGO DE PRODUCTO: bloquear espacios ---
+            const campoCodigo = document.getElementById('id_codigo_producto_afectado');
+            if (campoCodigo) {
+                campoCodigo.addEventListener('keypress', function(e) {
+                    if (e.key === ' ') {
+                        e.preventDefault();
+                    }
+                });
+                campoCodigo.addEventListener('input', function() {
+                    this.value = this.value.replace(/\s/g, '');
+                });
+            }
+
+            // --- 2. VALIDACIÓN DE EVIDENCIAS (ÉPICA) ---
+            const fileInput = document.getElementById('id_captura_pantalla');
+            const fileNameDisplay = document.getElementById('file-name');
+            const fileError = document.getElementById('file-error');
+
+            if (fileInput) {
+                fileInput.setAttribute('accept', '.jpg,.jpeg,.png');
+
+                fileInput.addEventListener('change', function(event) {
+                    fileError.classList.add('hidden');
+                    fileError.textContent = '';
+                    fileNameDisplay.classList.remove('text-red-600');
+                    fileNameDisplay.classList.add('text-gray-500');
+
+                    if (this.files && this.files.length > 0) {
+                        const file = this.files[0];
+                        fileNameDisplay.textContent = file.name;
+                        fileNameDisplay.classList.remove('text-gray-500'); 
+                        fileNameDisplay.classList.add('text-gray-800');
+
+                        const maxSize = 5 * 1024 * 1024; 
+                        if (file.size > maxSize) {
+                            fileError.textContent = "El archivo es demasiado pesado. El límite máximo es de 5 MB.";
+                            fileError.classList.remove('hidden');
+                            fileNameDisplay.classList.add('text-red-600');
+                            fileNameDisplay.classList.remove('text-gray-800');
+                            this.value = ''; 
+                            return;
+                        }
+
+                        const allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
+                        if (!allowedExtensions.test(file.name)) {
+                            fileError.textContent = "Formato no válido. Solo se permiten imágenes (JPG, JPEG, PNG).";
+                            fileError.classList.remove('hidden');
+                            fileNameDisplay.classList.add('text-red-600');
+                            fileNameDisplay.classList.remove('text-gray-800');
+                            this.value = ''; 
+                            return;
+                        }
+
+                    } else {
+                        {% if form.instance.captura_pantalla %}
+                            fileNameDisplay.textContent = "Imagen actual: {{ form.instance.captura_pantalla.name }}";
+                        {% else %}
+                            fileNameDisplay.textContent = "Ningún archivo seleccionado";
+                            fileNameDisplay.classList.add('text-gray-500');
+                        {% endif %}
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

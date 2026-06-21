@@ -3,7 +3,7 @@ from django import forms
 import re
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
-from .models import Arancel
+from .models import Arancel, PartidaRecurrente, CategoriaRecurrente
 from django.contrib import messages
 
 # --- REGLAS DE VALIDACIÓN DE LA HISTORIA DE USUARIO ---
@@ -62,4 +62,18 @@ class ArancelAdmin(ImportExportModelAdmin):
         super().save_model(request, obj, form, change)
         if not change: # Si es una creación nueva y no una edición
             messages.success(request, "Partida arancelaria guardada correctamente.")
+
+
+@admin.register(PartidaRecurrente)
+class PartidaRecurrenteAdmin(admin.ModelAdmin):
+    list_display = ('usuario', 'arancel', 'categoria', 'fecha_agregado')
+    list_filter = ('usuario', 'categoria')
+    search_fields = ('usuario__username', 'arancel__codigo', 'arancel__descripcion')
+
+
+@admin.register(CategoriaRecurrente)
+class CategoriaRecurrenteAdmin(admin.ModelAdmin):
+    list_display = ('nombre', 'usuario', 'color', 'orden')
+    list_filter = ('usuario',)
+    search_fields = ('nombre', 'usuario__username')
 

@@ -8,6 +8,7 @@ from .models import ReporteError
 from .forms import ReporteErrorForm
 
 def puede_modificar(reporte):
+    # Límite de 10 minutos
     return timezone.now() - reporte.fecha_creacion < timedelta(minutes=10)
 
 def reportar_error(request):
@@ -15,13 +16,22 @@ def reportar_error(request):
         form = ReporteErrorForm(request.POST, request.FILES)
         if form.is_valid():
             reporte = form.save(commit=False)
+            
+            # Asociar usuario si está logueado
             if request.user.is_authenticated:
                 reporte.usuario = request.user
                 reporte.es_usuario_registrado = True
+            
+            # Estado y prioridad actualizados
+            reporte.estado = 'Pendiente de revisión'
+            reporte.prioridad = 'media'
             reporte.save()
-            messages.success(request, '¡Reporte enviado exitosamente!')
-            messages.warning(request, 'Tienes 10 minutos para hacer modificaciones o eliminar tu reporte.')
-            return redirect('reportes:confirmacion', reporte_id=reporte.id)
+            
+            # Mensaje emergente
+            messages.success(request, 'Reporte enviado correctamente')
+            
+            # Redirige a la pantalla principal
+            return redirect('home')
     else:
         form = ReporteErrorForm()
     return render(request, 'reportes/reportar_error.html', {'form': form})

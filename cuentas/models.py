@@ -49,3 +49,41 @@ class HistorialBusqueda(models.Model):
 
     def __str__(self):
         return f"{self.usuario.username} buscó {self.codigo_buscado} - {self.fecha.strftime('%d/%m/%Y %H:%M')}"
+
+
+class CategoriaRecurrente(models.Model):
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Usuario")
+    nombre = models.CharField(max_length=100, verbose_name="Nombre de la categoría")
+    color = models.CharField(max_length=7, default='#3b82f6', verbose_name="Color (hex)")
+    orden = models.IntegerField(default=0, verbose_name="Orden")
+
+    class Meta:
+        unique_together = ('usuario', 'nombre')
+        ordering = ['orden', 'nombre']
+        verbose_name = "Categoría de Partida Recurrente"
+        verbose_name_plural = "Categorías de Partidas Recurrentes"
+
+    def __str__(self):
+        return self.nombre
+
+
+class PartidaRecurrente(models.Model):
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Usuario")
+    arancel = models.ForeignKey(Arancel, on_delete=models.CASCADE, verbose_name="Partida Arancelaria")
+    categoria = models.ForeignKey(
+        CategoriaRecurrente,
+        on_delete=models.SET_NULL,
+        null=True, blank=True,
+        verbose_name="Categoría"
+    )
+    observacion = models.CharField(max_length=100, null=True, blank=True, verbose_name="Observación")
+    fecha_agregado = models.DateTimeField(auto_now_add=True, verbose_name="Agregado el")
+
+    class Meta:
+        unique_together = ('usuario', 'arancel')
+        ordering = ['-fecha_agregado']
+        verbose_name = "Partida Recurrente"
+        verbose_name_plural = "Partidas Recurrentes"
+
+    def __str__(self):
+        return f"{self.usuario.username} - {self.arancel.codigo}"

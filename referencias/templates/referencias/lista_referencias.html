@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Referencias de Clasificación - SISARM</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f9f9f9;
+            margin: 0;
+        }
+        .btn-volver {
+            display: inline-block;
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            background-color: #475569;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        .btn-volver:hover {
+            background-color: #334155;
+        }
+        h1 {
+            color: #1e293b;
+            margin-bottom: 5px;
+        }
+        .subtitulo {
+            color: #64748b;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+        .panel-filtros {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .fila-filtros {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: flex-end;
+        }
+        .grupo-filtro {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .grupo-filtro label {
+            font-size: 13px;
+            font-weight: bold;
+            color: #555;
+        }
+        .input-texto, .input-codigo, select {
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+        }
+        .input-texto { width: 250px; }
+        .input-codigo { width: 150px; }
+        select { width: 180px; cursor: pointer; }
+        .btn-filtrar {
+            padding: 10px 25px;
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            height: 40px;
+        }
+        .btn-filtrar:hover {
+            background-color: #004494;
+        }
+        .grid-referencias {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 15px;
+        }
+        .tarjeta {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border-left: 4px solid #0056b3;
+        }
+        .tarjeta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+        .tarjeta--resolucion { border-left-color: #2563eb; }
+        .tarjeta--caso_estudio { border-left-color: #7c3aed; }
+        .tarjeta--circular { border-left-color: #059669; }
+        .tarjeta--normativa { border-left-color: #d97706; }
+        .tarjeta--dictamen { border-left-color: #dc2626; }
+        .tarjeta--otro { border-left-color: #64748b; }
+
+        .tarjeta h3 {
+            margin: 0 0 8px 0;
+            font-size: 16px;
+            color: #1e293b;
+        }
+        .tarjeta h3 a {
+            color: #2563eb;
+            text-decoration: none;
+        }
+        .tarjeta h3 a:hover {
+            text-decoration: underline;
+        }
+        .tarjeta .meta {
+            font-size: 12px;
+            color: #64748b;
+            margin-bottom: 10px;
+        }
+        .tarjeta .meta span {
+            margin-right: 12px;
+        }
+        .etiqueta-tipo {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+            color: white;
+        }
+        .etiqueta-tipo--resolucion { background-color: #2563eb; }
+        .etiqueta-tipo--caso_estudio { background-color: #7c3aed; }
+        .etiqueta-tipo--circular { background-color: #059669; }
+        .etiqueta-tipo--normativa { background-color: #d97706; }
+        .etiqueta-tipo--dictamen { background-color: #dc2626; }
+        .etiqueta-tipo--otro { background-color: #64748b; }
+
+        .descripcion {
+            font-size: 13px;
+            color: #475569;
+            line-height: 1.4;
+            margin-bottom: 10px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .codigos-rel {
+            font-size: 12px;
+            color: #64748b;
+        }
+        .codigos-rel a {
+            color: #2563eb;
+            text-decoration: none;
+        }
+        .codigos-rel a:hover {
+            text-decoration: underline;
+        }
+        .archivos {
+            margin-top: 8px;
+        }
+        .archivos a {
+            display: inline-block;
+            padding: 4px 10px;
+            background-color: #f1f5f9;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #2563eb;
+            text-decoration: none;
+            margin-right: 5px;
+        }
+        .archivos a:hover {
+            background-color: #e2e8f0;
+        }
+        .sin-resultados {
+            text-align: center;
+            padding: 40px;
+            color: #64748b;
+            font-size: 16px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .contador {
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: #64748b;
+        }
+    </style>
+</head>
+<body>
+    <a href="{% url 'home' %}" class="btn-volver">⬅ Volver al Menú Principal</a>
+
+    <h1>📚 Referencias de Clasificación</h1>
+    <p class="subtitulo">Resoluciones, casos de estudio y documentación legal para fundamentar tus clasificaciones arancelarias.</p>
+
+    <div class="panel-filtros">
+        <form method="GET" action="">
+            <div class="fila-filtros">
+                <div class="grupo-filtro">
+                    <label for="{{ form.texto.id_for_label }}">Buscar</label>
+                    {{ form.texto }}
+                </div>
+                <div class="grupo-filtro">
+                    <label for="{{ form.tipo.id_for_label }}">Tipo</label>
+                    {{ form.tipo }}
+                </div>
+                <div class="grupo-filtro">
+                    <label for="{{ form.codigo_arancelario.id_for_label }}">Código Arancelario</label>
+                    {{ form.codigo_arancelario }}
+                </div>
+                <button type="submit" class="btn-filtrar">Filtrar</button>
+                {% if request.GET.texto or request.GET.tipo or request.GET.codigo_arancelario %}
+                    <a href="{% url 'referencias:lista' %}" style="padding: 10px 15px; color: #64748b; text-decoration: none; font-size: 14px;">
+                        ✕ Limpiar filtros
+                    </a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+
+    <div class="contador">
+        {{ referencias.count }} referencia{{ referencias.count|pluralize:"s" }} encontrada{{ referencias.count|pluralize:"s" }}
+    </div>
+
+    <div class="grid-referencias">
+        {% for ref in referencias %}
+            <div class="tarjeta tarjeta--{{ ref.tipo }}">
+                <div class="meta">
+                    <span class="etiqueta-tipo etiqueta-tipo--{{ ref.tipo }}">{{ ref.get_tipo_display }}</span>
+                    <span>{{ ref.entidad_emisora }}</span>
+                    <span>{{ ref.fecha_emision|date:"d/m/Y" }}</span>
+                </div>
+                <h3><a href="{% url 'referencias:detalle' ref.id %}">{{ ref.titulo }}</a></h3>
+                <div class="descripcion">{{ ref.descripcion|truncatewords:40 }}</div>
+                {% if ref.codigos_arancelarios.exists %}
+                    <div class="codigos-rel">
+                        Códigos relacionados:
+                        {% for codigo in ref.codigos_arancelarios.all|slice:":5" %}
+                            <a href="{% url 'detalle_arancel' codigo.id %}">{{ codigo.codigo }}</a>{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                        {% if ref.codigos_arancelarios.count > 5 %}
+                            y {{ ref.codigos_arancelarios.count|add:"-5" }} más
+                        {% endif %}
+                    </div>
+                {% endif %}
+                {% if ref.archivo or ref.enlace %}
+                    <div class="archivos">
+                        {% if ref.archivo %}
+                            <a href="{{ ref.archivo.url }}" target="_blank">📄 Ver PDF</a>
+                        {% endif %}
+                        {% if ref.enlace %}
+                            <a href="{{ ref.enlace }}" target="_blank">🔗 Enlace externo</a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        {% empty %}
+            <div class="sin-resultados" style="grid-column: 1 / -1;">
+                No se encontraron referencias de clasificación con los filtros aplicados.
+            </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
