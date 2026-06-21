@@ -50,6 +50,7 @@ urlpatterns = [
     path('personal/crear/', views.crear_usuario, name='crear_usuario'),
     path('personal/editar/<int:user_id>/', views.editar_usuario, name='editar_usuario'),
     path('personal/eliminar/<int:user_id>/', views.eliminar_usuario, name='eliminar_usuario'),
+    path('referencias/', include('referencias.urls')),
 ]
 
 if settings.DEBUG:

@@ -87,12 +87,32 @@ Define el usuario, la contraseña y guarda.
 
 Asegúrate de que la casilla "Estado de staff" (Staff status) permanezca DESMARCADA para mantenerlo con el rol de solo lectura.
 
+
+## 🤖 Configuración del Asistente de IA (Sisa)
+
+El sistema integra un asistente virtual potenciado por Gemini (Google). Para que funcione correctamente en un entorno local, es estrictamente necesario configurar las variables de entorno.
+
+**Pasos de configuración:**
+1. En la raíz del proyecto (al mismo nivel que `manage.py`), crea un archivo llamado exactamente `.env`.
+2. Añade tu clave API proporcionada por Google AI Studio con el siguiente formato:
+   ```env
+   GEMINI_API_KEY= ...
+Importante: Nunca subas el archivo .env a tu repositorio. Asegúrate de que .env esté incluido en tu archivo .gitignore.
+
+👥 Gestión de Usuarios
+El sistema ahora diferencia entre roles operativos y gerenciales:
+
+Administrador (is_staff=True): Acceso total al CRUD de partidas arancelarias, historial de auditoría y gestión de personal.
+
+Despachante (is_staff=False): Acceso restringido únicamente a las consultas y al chat con la IA.
+
+
+### ¡El toque final!
+Una vez que hayas actualizado estos archivos, haz un último commit para guardar este hito administrativo:
+
+```bash
+git add requirements.txt README.md
+git commit -m "docs: actualizados requerimientos y README con configuración de IA y roles"
+git push origin main
+
 Desarrollado por Bueno17, SiroCarv, Kwyxzel.
-
-## 🤖 Configuración del Asistente Inteligente (Sisa)
-
-Este proyecto utiliza **Google Gemini** como motor de Inteligencia Artificial mediante RAG (Retrieval-Augmented Generation) para responder consultas sobre la base de datos arancelaria. Para que funcione localmente, necesitas configurar API Key.
-
-### Pasos:
-1. En la raíz del proyecto, copia el archivo de ejemplo de variables de entorno:
-   `claveapi.env.example`
